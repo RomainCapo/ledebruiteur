@@ -6,7 +6,16 @@ from PIL import Image
 from tqdm.notebook import tqdm
 from ..utils.utils import create_dir
 
+
 def make_dataframe(base_path="images"):
+    """Makes a dataframe from an image directory
+
+    Keyword Arguments:
+        base_path {str} -- Image directory's path (default: {"images"})
+
+    Returns:
+        DataFrame -- Columns : [path : image path, size_x: image width, size_y: image height]
+    """
     np.random.seed(42)
 
     images_folder = np.random.choice(os.listdir(base_path), 20)
@@ -18,28 +27,54 @@ def make_dataframe(base_path="images"):
         image_folder = os.path.join(base_path, folder)
 
         for img_name in os.listdir(image_folder):
-            img_path = os.path.join(image_folder, img_name).replace("\\","/")
+            img_path = os.path.join(image_folder, img_name).replace("\\", "/")
             images_path.append(img_path)
             img = Image.open(img_path)
             images_size.append(img.size)
 
-    dataframe = pd.DataFrame(pd.Series(images_path).to_frame("path")).join(pd.Series(images_size).to_frame("size"))
+    dataframe = pd.DataFrame(pd.Series(images_path).to_frame(
+        "path")).join(pd.Series(images_size).to_frame("size"))
 
-    dataframe[["size_x", "size_y"]] = pd.DataFrame(dataframe["size"].tolist(), index=dataframe.index)
+    dataframe[["size_x", "size_y"]] = pd.DataFrame(
+        dataframe["size"].tolist(), index=dataframe.index)
     dataframe.drop(["size"], axis=1, inplace=True)
 
     return dataframe[(dataframe["size_x"] > 100) & (dataframe["size_y"] > 100)]
 
-def crop_img(img, shape=(100,100)):
+
+def crop_img(img, shape=(100, 100)):
+    """Crops image from center
+
+    Arguments:
+        img {Array} -- Numpy like array containing the image
+
+    Keyword Arguments:
+        shape {tuple} -- Crop (default: {(100, 100)})
+
+    Returns:
+        Array -- The cropped image
+    """
     width, height, _ = img.shape
 
-    cx, cy = width / 2, height /2
+    cx, cy = width / 2, height / 2
     sx, sy = cx - shape[0] / 2, cy - shape[1] / 2
     ex, ey = cx + shape[0] / 2, cy + shape[1] / 2
 
-    return img[int(sx) : int(ex), int(sy) : int(ey)]
+    return img[int(sx): int(ex), int(sy): int(ey)]
+
 
 def preprocess(dataframe, resized_path="resized_images"):
+    """Preprocesses all the images contained in the dataframe
+
+    Arguments:
+        dataframe {DataFrame} -- DataFrame containing columns [path, image width, image height]
+
+    Keyword Arguments:
+        resized_path {str} -- Preprocessed image directory (default: {"resized_images"})
+
+    Returns:
+        DataFrame -- DataFrame with preprocessed image's path
+    """
     create_dir(resized_path)
 
     image_names = []
