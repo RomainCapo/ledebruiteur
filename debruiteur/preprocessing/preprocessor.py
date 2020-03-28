@@ -102,32 +102,21 @@ def make_resized_dataframe(dataframe, resized_path="resized_images"):
 
     return pd.DataFrame({'path': image_names})
 
-noise_class_list = [
-    GaussianNoise(mean=0, std=10),
-    PoissonNoise(),
-    UniformNoise(amplitude=100),
-    SaltPepperNoise(p=0.3),
-    SquareMaskNoise(mask_shape=(10, 10), freq=0.1),
-    SpeckleNoise(),
-    AveragingBlurNoise(),
-    GaussianBlurNoise(),
-    MedianBlurNoise()
-]
-
-def make_noised_dataframe(dataframe, noised_path="noised_images"):
+def make_noised_dataframe(dataframe, noise_list, noised_path="noised_images"):
     """Add noise to all images in the dataframes
-    
+
     Arguments:
         dataframe {DataFrame} -- Dataframe with resized image path
-    
+        noise_list {list} -- List of Noise's sublclass instance
+
     Keyword Arguments:
         noised_path {str} -- path to the output directory (default: {"noised_images"})
-    
+
     Raises:
         ValueError: Invalid noises
-    
+
     Returns:
-        DataFrame -- Dataframe with image noised path
+        DataFrame -- Dataframe with noised image's path
     """
     original_image_names = []
     noised_image_names = []
@@ -135,11 +124,11 @@ def make_noised_dataframe(dataframe, noised_path="noised_images"):
     init_dir(noised_path)
 
     for index, row in tqdm(dataframe.iterrows()):
-        rand_noise = random.choice(noise_class_list)
+        rand_noise = random.choice(noise_list)
 
         if not issubclass(type(rand_noise), Noise) and rand_noise is not None:
             raise ValueError("noise is not of valid type Noise")
-            
+
         img = cv2.imread(row['path'])
 
         noised_img = rand_noise.add(img)
@@ -149,4 +138,4 @@ def make_noised_dataframe(dataframe, noised_path="noised_images"):
         cv2.imwrite(path, noised_img)
         original_image_names.append(row['path'])
         noised_image_names.append(path)
-    return pd.DataFrame({'original_path':original_image_names, 'noised_path':noised_image_names})
+    return pd.DataFrame({'original_path': original_image_names, 'noised_path': noised_image_names})

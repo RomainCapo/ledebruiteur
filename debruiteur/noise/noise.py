@@ -208,7 +208,7 @@ class AveragingBlurNoise(Noise):
         """Init
 
         Keyword Arguments:
-            kernel {tuple} -- kernel of the blur
+            kernel {tuple} -- kernel shape of the blur
         """
         self.kernel = kernel
 
@@ -219,7 +219,7 @@ class AveragingBlurNoise(Noise):
             img {Array} -- Numpy like array of image
 
         Returns:
-            Array -- Additive speckle noise
+            Array -- Averaging blur noise
         """
         return cv2.blur(img, self.kernel)
 
@@ -230,18 +230,18 @@ class GaussianBlurNoise(Noise):
         """Init
 
         Keyword Arguments:
-            kernel {tuple} -- kernel of the blur
+            kernel {tuple} -- kernel shape of the blur
         """
         self.kernel = kernel
 
     def add(self, img):
-        """Adds averaging blur noise
+        """Adds gaussian blur noise
 
         Arguments:
             img {Array} -- Numpy like array of image
 
         Returns:
-            Array -- Additive speckle noise
+            Array -- Gaussian blur noise
         """
         return cv2.GaussianBlur(img, self.kernel, 0)
 
@@ -257,12 +257,12 @@ class MedianBlurNoise(Noise):
         self.ksize = ksize
 
     def add(self, img):
-        """Adds averaging blur noise
+        """Adds median blur noise
 
         Arguments:
             img {Array} -- Numpy like array of image
 
         Returns:
-            Array -- Additive speckle noise
+            Array -- Median blur noise
         """
         return cv2.medianBlur(img, self.ksize)
