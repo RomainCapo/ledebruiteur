@@ -11,11 +11,15 @@ import os
 import shutil
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
 from ..noise.noise import Noise
 
 
+
 def init_dir(directory):
-    """Creates a directory if not exists and remove content if it exist
+    """Creates a directory if not exists and remove content if it exists
 
     Arguments:
         directory {string} -- path
@@ -79,3 +83,28 @@ def plot_im_grid_from_list(images, rows, columns, figsize=(8, 8)):
         plt.axis('off')
 
     plt.show()
+
+
+def split_train_val_df(df, p=0.8):
+    """Splits DataFrame in train df and validation df
+
+    Arguments:
+        df {DataFrame} -- Original DataFrame
+
+    Keyword Arguments:
+        p {float} -- Probability in ]0:1[ (default: {0.8})
+
+    Raises:
+        ValueError: Must be a panda's Dataframe
+        ValueError: Probability must be in ]0;1[
+
+    Returns:
+        [type] -- [description]
+    """
+    if type(df) != pd.DataFrame:
+        raise ValueError("Df must be panda's DataFrame")
+    if 0 <= p >= 1:
+        raise ValueError("p must be a probability in ]0;1[")
+
+    msk = np.random.rand(len(df)) < p
+    return df[msk], df[~msk]

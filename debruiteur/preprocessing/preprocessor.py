@@ -13,9 +13,10 @@ import cv2
 import pandas as pd
 from PIL import Image
 from tqdm.notebook import tqdm
+import random
+
 from ..utils.utils import init_dir
 from ..noise.noise import *
-import random
 
 
 def make_original_dataframe(base_path="images"):

@@ -11,7 +11,6 @@ from abc import ABC, abstractmethod
 import numpy as np
 import cv2
 
-
 class Noise(ABC):
 
     @abstractmethod
@@ -84,7 +83,7 @@ class UniformNoise(Noise):
         Raises:
             ValueError: Wrong amplitude given
         """
-        if 0 <= amplitude >= 255:
+        if amplitude <= 0 or amplitude >= 255:
             raise ValueError("Amplitude must be in ]0; 255[")
         self.amplitude = amplitude
 
@@ -113,7 +112,7 @@ class SaltPepperNoise(Noise):
         Raises:
             ValueError: Wrong probability given
         """
-        if 0 <= p >= 1:
+        if p <= 0 or p >= 1:
             raise ValueError("Probability must be in ]0; 1[")
         self.p = p
 
@@ -146,9 +145,9 @@ class SquareMaskNoise(Noise):
             ValueError: [description]
             ValueError: [description]
         """
-        if len(mask_shape) != 2:
-            raise ValueError("Mask must have 2 dimensions")
-        if 0 <= freq >= 1:
+        if len(mask_shape) != 2 or type(mask_shape) != tuple:
+            raise ValueError("Mask must be a tuple of len == 2")
+        if freq <= 0 or freq >= 1:
             raise ValueError("Frequency must be in ]0; 1[")
         self.mask_shape = mask_shape
         self.target_freq = freq
