@@ -1,13 +1,24 @@
+"""
+Le Debruiteur
+Jonas Freiburghaus
+Romain Capocasale
+He-Arc, INF3dlm-a
+Image Processing course
+2019-2020
+"""
+
 import os
 import numpy as np
 import cv2
 import pandas as pd
 from PIL import Image
 from tqdm.notebook import tqdm
-from ..utils.utils import create_dir
+from ..utils.utils import init_dir
+from ..noise.noise import *
+import random
 
 
-def make_dataframe(base_path="images"):
+def make_original_dataframe(base_path="images"):
     """Makes a dataframe from an image directory
 
     Keyword Arguments:
@@ -63,7 +74,7 @@ def crop_img(img, shape=(100, 100)):
     return img[int(sx): int(ex), int(sy): int(ey)]
 
 
-def preprocess(dataframe, resized_path="resized_images"):
+def make_resized_dataframe(dataframe, resized_path="resized_images"):
     """Preprocesses all the images contained in the dataframe
 
     Arguments:
@@ -75,7 +86,7 @@ def preprocess(dataframe, resized_path="resized_images"):
     Returns:
         DataFrame -- DataFrame with preprocessed image's path
     """
-    create_dir(resized_path)
+    init_dir(resized_path)
 
     image_names = []
 
@@ -90,3 +101,52 @@ def preprocess(dataframe, resized_path="resized_images"):
         cv2.imwrite(path, croped_img)
 
     return pd.DataFrame({'path': image_names})
+
+noise_class_list = [
+    GaussianNoise(mean=0, std=10),
+    PoissonNoise(),
+    UniformNoise(amplitude=100),
+    SaltPepperNoise(p=0.3),
+    SquareMaskNoise(mask_shape=(10, 10), freq=0.1),
+    SpeckleNoise(),
+    AveragingBlurNoise(),
+    GaussianBlurNoise(),
+    MedianBlurNoise()
+]
+
+def make_noised_dataframe(dataframe, noised_path="noised_images"):
+    """Add noise to all images in the dataframes
+    
+    Arguments:
+        dataframe {DataFrame} -- Dataframe with resized image path
+    
+    Keyword Arguments:
+        noised_path {str} -- path to the output directory (default: {"noised_images"})
+    
+    Raises:
+        ValueError: Invalid noises
+    
+    Returns:
+        DataFrame -- Dataframe with image noised path
+    """
+    original_image_names = []
+    noised_image_names = []
+
+    init_dir(noised_path)
+
+    for index, row in tqdm(dataframe.iterrows()):
+        rand_noise = random.choice(noise_class_list)
+
+        if not issubclass(type(rand_noise), Noise) and rand_noise is not None:
+            raise ValueError("noise is not of valid type Noise")
+            
+        img = cv2.imread(row['path'])
+
+        noised_img = rand_noise.add(img)
+        noised_class_name = type(rand_noise).__name__
+        path = os.path.join(noised_path, f"img{index}_{noised_class_name}.jpg")
+
+        cv2.imwrite(path, noised_img)
+        original_image_names.append(row['path'])
+        noised_image_names.append(path)
+    return pd.DataFrame({'original_path':original_image_names, 'noised_path':noised_image_names})

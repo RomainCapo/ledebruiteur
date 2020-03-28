@@ -1,16 +1,29 @@
+"""
+Le Debruiteur
+Jonas Freiburghaus
+Romain Capocasale
+He-Arc, INF3dlm-a
+Image Processing course
+2019-2020
+"""
+
 import os
+import shutil
 import cv2
 import matplotlib.pyplot as plt
 from ..noise.noise import Noise
 
 
-def create_dir(directory):
-    """Creates a directory if not exists
+def init_dir(directory):
+    """Creates a directory if not exists and remove content if it exist
 
     Arguments:
         directory {string} -- path
     """
     if not os.path.exists(directory):
+        os.makedirs(directory)
+    else :
+        shutil.rmtree(directory)
         os.makedirs(directory)
 
 

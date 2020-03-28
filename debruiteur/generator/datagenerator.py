@@ -1,3 +1,12 @@
+"""
+Le Debruiteur
+Jonas Freiburghaus
+Romain Capocasale
+He-Arc, INF3dlm-a
+Image Processing course
+2019-2020
+"""
+
 import multiprocessing as mp
 from keras.utils import Sequence
 import numpy as np

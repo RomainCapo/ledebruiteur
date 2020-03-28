@@ -1,3 +1,12 @@
+"""
+Le Debruiteur
+Jonas Freiburghaus
+Romain Capocasale
+He-Arc, INF3dlm-a
+Image Processing course
+2019-2020
+"""
+
 from abc import ABC, abstractmethod
 import numpy as np
 import cv2
@@ -190,3 +199,70 @@ class SpeckleNoise(Noise):
         """
         normal = np.random.randn(*img.shape).astype(img.dtype)
         return cv2.add(img, cv2.multiply(img, normal))
+
+
+class AveragingBlurNoise(Noise):
+    """Averaging blur noise"""
+
+    def __init__(self, kernel=(5,5)):
+        """Init
+
+        Keyword Arguments:
+            kernel {tuple} -- kernel of the blur
+        """
+        self.kernel = kernel
+
+    def add(self, img):
+        """Adds averaging blur noise
+
+        Arguments:
+            img {Array} -- Numpy like array of image
+
+        Returns:
+            Array -- Additive speckle noise
+        """
+        return cv2.blur(img, self.kernel)
+
+class GaussianBlurNoise(Noise):
+    """Gaussian blur noise"""
+
+    def __init__(self, kernel=(5,5)):
+        """Init
+
+        Keyword Arguments:
+            kernel {tuple} -- kernel of the blur
+        """
+        self.kernel = kernel
+
+    def add(self, img):
+        """Adds averaging blur noise
+
+        Arguments:
+            img {Array} -- Numpy like array of image
+
+        Returns:
+            Array -- Additive speckle noise
+        """
+        return cv2.GaussianBlur(img, self.kernel, 0)
+
+class MedianBlurNoise(Noise):
+    """Median blur noise"""
+
+    def __init__(self, ksize=5):
+        """Init
+
+        Keyword Arguments:
+            ksize {int} -- size of the blur
+        """
+        self.ksize = ksize
+
+    def add(self, img):
+        """Adds averaging blur noise
+
+        Arguments:
+            img {Array} -- Numpy like array of image
+
+        Returns:
+            Array -- Additive speckle noise
+        """
+        return cv2.medianBlur(img, self.ksize)
