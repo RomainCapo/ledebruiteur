@@ -20,7 +20,6 @@ class DataGenerator(Sequence):
     def __init__(self,
                  images_paths,
                  batch_size=32,
-                 image_dimensions=(100, 100, 3),
                  shuffle=False):
         """Init
 
@@ -29,11 +28,9 @@ class DataGenerator(Sequence):
 
         Keyword Arguments:
             batch_size {int} -- Batch size (default: {32})
-            image_dimensions {tuple} -- Image shape (default: {(100, 100, 3)})
             shuffle {bool} -- Should shuffle the data (default: {False})
         """
         self.images_paths = images_paths
-        self.dim = image_dimensions
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.on_epoch_end()
@@ -56,18 +53,21 @@ class DataGenerator(Sequence):
         """Get next
 
         Arguments:
-            index {[type]} -- Index
+            index {int} -- Index
 
         Returns:
-            [Array] -- Batch of images
+            [(Array, Array)] -- Batch of images
         """
         indexes = self.indexes[index *
                                self.batch_size: (index + 1) * self.batch_size]
 
         with mp.Pool() as pool:
             images = pool.map(
-                cv2.imread, [self.images_paths[k] for k in indexes])
+                cv2.imread, [self.images_paths.iloc[k, 0] for k in indexes])
+            noised_images = pool.map(
+                cv2.imread, [self.images_paths.iloc[k, 1] for k in indexes])
 
         images = np.array(images, np.float32) / 255
+        noised_images = np.array(noised_images, np.float32) / 255
 
-        return images
+        return noised_images, images
