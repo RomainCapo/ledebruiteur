@@ -18,4 +18,4 @@ ipython_config.py
 images/
 resized_images/
 noised_images/
-models/
+saved_models/
