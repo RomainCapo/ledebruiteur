@@ -14,7 +14,7 @@ import pandas as pd
 from keras.models import load_model as k_load_model
 
 
-def init_dir(directory):
+def init_dir(directory, delete_existing=True):
     """Creates a directory if not exists and remove content if it exists
 
     Arguments:
@@ -23,8 +23,9 @@ def init_dir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
     else:
-        shutil.rmtree(directory)
-        os.makedirs(directory)
+        if delete_existing:
+            shutil.rmtree(directory)
+            os.makedirs(directory)
 
 
 def split_train_val_df(df, p=0.8):
@@ -60,7 +61,7 @@ def save_model(model, path, name):
         path {String} -- Save directory
         name {name} -- File name
     """
-    init_dir(path)
+    init_dir(path, delete_existing=False)
     model.save(os.path.join(path, name))
 
 

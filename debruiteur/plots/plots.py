@@ -83,12 +83,13 @@ def plot_model_loss(history):
     plt.legend(['train', 'val'], loc='upper left')
     plt.show()
 
-def plot_result_comparison(model, gen):
+def plot_result_comparison(model, gen, reshape=None):
     """Plots comparison, between original, noised, denoised images
 
     Arguments:
         model {Model} -- Keras model
         gen {Sequence} -- Keras data generator
+        reshape {tuple} -- Reshape dimension (default: {None})
     """
     x, y = gen[0]
     y_pred = model.predict(x)
@@ -105,7 +106,10 @@ def plot_result_comparison(model, gen):
     for i in range(rows):
         for j in range(cols):
             im = images[j * rows + i]
-            im = im.reshape((im.shape[0], im.shape[1]))
+            if reshape:
+                im = im.reshape(reshape)
+            else:
+                im = im.reshape((im.shape[0], im.shape[1]))
             ax = plt.subplot(gs[i, j])
             ax.imshow(im, cmap=plt.cm.gray)
             ax.axis('off')
