@@ -1,3 +1,12 @@
+"""
+Le Debruiteur
+Jonas Freiburghaus
+Romain Capocasale
+He-Arc, INF3dlm-a
+Image Processing course
+2019-2020
+"""
+
 from keras.initializers import RandomNormal
 from keras.layers import Activation, BatchNormalization, Conv2D
 from keras.layers.merge import Add

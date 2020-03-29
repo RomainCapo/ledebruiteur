@@ -1,3 +1,12 @@
+"""
+Le Debruiteur
+Jonas Freiburghaus
+Romain Capocasale
+He-Arc, INF3dlm-a
+Image Processing course
+2019-2020
+"""
+
 from keras.initializers import glorot_uniform
 from keras.layers import Activation, Conv2D, Conv2DTranspose, Input, Lambda
 from keras.layers.merge import Add
