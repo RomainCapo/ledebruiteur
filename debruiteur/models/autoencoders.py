@@ -20,7 +20,7 @@ def build_conv_autoencoder(input_shape=(100, 100, 1), optimizer="adam", loss="ms
         loss {loss} -- valid keras loss (default: {"mse"})
 
     Returns:
-        History -- Keras training history callback
+        Model -- Keras convolutional autoencoder model
     """
     ae_model = Sequential()
 
@@ -48,7 +48,16 @@ def build_conv_autoencoder(input_shape=(100, 100, 1), optimizer="adam", loss="ms
 
 
 def build_dense_autoencoder(input_shape=10000, optimizer="adam", loss="binary_crossentropy"):
+    """Autoencode model, optimizer : adam, loss : MSE
 
+    Keyword Arguments:
+        input_shape {tuple} -- Image shape, grayscale (default: {1000})
+        optimizer {optimizer} -- valid keras optimizer (default: {"adam"})
+        loss {loss} -- valid keras loss (default: {"mse"})
+
+    Returns:
+        Model -- Keras dense autoencoder model
+    """
     ae_model = Sequential()
 
     # Encoder
