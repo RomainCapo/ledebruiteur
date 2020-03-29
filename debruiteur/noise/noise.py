@@ -11,6 +11,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 import cv2
 
+
 class Noise(ABC):
 
     @abstractmethod
@@ -49,9 +50,8 @@ class GaussianNoise(Noise):
         Returns:
             Array -- Additive gaussian noise
         """
-        w, h, c = img.shape
-        gauss = np.random.normal(
-            self.mean, self.std, (w, h, c)).astype(img.dtype)
+        w, h = img.shape
+        gauss = np.random.normal(self.mean, self.std, (w, h)).astype(img.dtype)
         return cv2.add(img, gauss)
 
 
@@ -103,18 +103,24 @@ class UniformNoise(Noise):
 class SaltPepperNoise(Noise):
     """Salt and pepper noise for images"""
 
-    def __init__(self, p=0.1):
+    def __init__(self, freq=0.1, s_or_p_prob=0.5):
         """Init
 
         Keyword Arguments:
-            p {float} -- Probability (default: {0.1})
+            freq {float} -- Frequency (default: {0.1})
+            s_and_p_prob {float} -- Salt and pepper probability (default: {0.5})
 
         Raises:
+            ValueError: Wrong frequency given
             ValueError: Wrong probability given
         """
-        if p <= 0 or p >= 1:
-            raise ValueError("Probability must be in ]0; 1[")
-        self.p = p
+        if freq <= 0 or freq >= 1:
+            raise ValueError("Frequency must be in ]0; 1[")
+        if s_or_p_prob <= 0 or s_or_p_prob >= 1:
+            raise ValueError("Salt or pepper probability must be in ]0; 1[")
+
+        self.freq = freq
+        self.s_or_p_prob = s_or_p_prob
 
     def add(self, img):
         """Add salt and pepper noise to the image
@@ -125,10 +131,10 @@ class SaltPepperNoise(Noise):
         Returns:
             Array -- Image with salt and pepper
         """
-        w, h, _ = img.shape
-        mask = np.random.rand(w, h) > self.p
-        mask3d = np.repeat(mask[:, :, np.newaxis], 3, axis=2)
-        return np.where(mask3d, img, 0 if np.random.rand(1) > 0.5 else 1)
+        w, h = img.shape
+        mask = np.random.rand(w, h) > self.freq
+
+        return np.where(mask, img, 0 if np.random.rand(1) > self.s_or_p_prob else 1)
 
 
 class SquareMaskNoise(Noise):
@@ -149,6 +155,7 @@ class SquareMaskNoise(Noise):
             raise ValueError("Mask must be a tuple of len == 2")
         if freq <= 0 or freq >= 1:
             raise ValueError("Frequency must be in ]0; 1[")
+
         self.mask_shape = mask_shape
         self.target_freq = freq
 
@@ -174,13 +181,13 @@ class SquareMaskNoise(Noise):
         Returns:
             Array -- The image with masked areas
         """
-        w, h, c = img.shape
-        mask = np.ones((w, h, c), dtype=bool)
+        w, h = img.shape
+        mask = np.ones((w, h), dtype=bool)
         for i in range(self._compute_iter((w, h))):
             x = np.random.randint(img.shape[0] - self.mask_shape[0])
             y = np.random.randint(img.shape[1] - self.mask_shape[1])
             off_x, off_y = x + self.mask_shape[0], y + self.mask_shape[1]
-            mask[x:off_x, y:off_y, :] = False
+            mask[x:off_x, y:off_y] = False
         return np.where(mask, img, 0)
 
 
@@ -203,7 +210,7 @@ class SpeckleNoise(Noise):
 class AveragingBlurNoise(Noise):
     """Averaging blur noise"""
 
-    def __init__(self, kernel=(5,5)):
+    def __init__(self, kernel=(5, 5)):
         """Init
 
         Keyword Arguments:
@@ -222,10 +229,11 @@ class AveragingBlurNoise(Noise):
         """
         return cv2.blur(img, self.kernel)
 
+
 class GaussianBlurNoise(Noise):
     """Gaussian blur noise"""
 
-    def __init__(self, kernel=(5,5)):
+    def __init__(self, kernel=(5, 5)):
         """Init
 
         Keyword Arguments:
@@ -243,6 +251,7 @@ class GaussianBlurNoise(Noise):
             Array -- Gaussian blur noise
         """
         return cv2.GaussianBlur(img, self.kernel, 0)
+
 
 class MedianBlurNoise(Noise):
     """Median blur noise"""

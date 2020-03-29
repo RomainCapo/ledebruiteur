@@ -1,3 +1,12 @@
+"""
+Le Debruiteur
+Jonas Freiburghaus
+Romain Capocasale
+He-Arc, INF3dlm-a
+Image Processing course
+2019-2020
+"""
+
 import cv2
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
@@ -29,11 +38,11 @@ def plot_im_grid_from_df(df, noise=None, rows=5, columns=5, figsize=(8, 8)):
 
     for i, (idx, row) in enumerate(df.sample(sample).iterrows()):
         path = row[0]
-        img = cv2.imread(path)
+        img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         if noise:
             img = noise.add(img)
         fig.add_subplot(rows, columns, i + 1)
-        plt.imshow(img)
+        plt.imshow(img, cmap=plt.cm.gray)
         plt.axis('off')
 
     plt.show()
@@ -54,7 +63,7 @@ def plot_im_grid_from_list(images, rows, columns, figsize=(8, 8)):
 
     for i, img in enumerate(images):
         fig.add_subplot(rows, columns, i + 1)
-        plt.imshow(img)
+        plt.imshow(img, cmap=plt.cm.gray)
         plt.axis('off')
 
     plt.show()
@@ -83,6 +92,7 @@ def plot_result_comparison(model, gen):
     """
     x, y = gen[0]
     y_pred = model.predict(x)
+
     images = np.vstack((y[:10], x[:10], y_pred[:10]))
 
     rows, cols = 10, 3
@@ -95,8 +105,9 @@ def plot_result_comparison(model, gen):
     for i in range(rows):
         for j in range(cols):
             im = images[j * rows + i]
+            im = im.reshape((im.shape[0], im.shape[1]))
             ax = plt.subplot(gs[i, j])
-            ax.imshow(im)
+            ax.imshow(im, cmap=plt.cm.gray)
             ax.axis('off')
 
     plt.show()

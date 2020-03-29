@@ -7,11 +7,11 @@ Image Processing course
 2019-2020
 """
 
-import multiprocessing as mp
+import cv2
 from keras.utils import Sequence
+import multiprocessing as mp
 import numpy as np
 import os
-import cv2
 
 
 class DataGenerator(Sequence):
@@ -19,6 +19,7 @@ class DataGenerator(Sequence):
 
     def __init__(self,
                  images_paths,
+                 img_shape=(100, 100, 1),
                  batch_size=32,
                  shuffle=False):
         """Init
@@ -27,10 +28,12 @@ class DataGenerator(Sequence):
             images_paths {Array} -- All image's path
 
         Keyword Arguments:
+            img_shape {tuple} -- Image shape, channel last
             batch_size {int} -- Batch size (default: {32})
             shuffle {bool} -- Should shuffle the data (default: {False})
         """
         self.images_paths = images_paths
+        self.img_shape = img_shape
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.on_epoch_end()
@@ -62,12 +65,16 @@ class DataGenerator(Sequence):
                                self.batch_size: (index + 1) * self.batch_size]
 
         with mp.Pool() as pool:
-            images = pool.map(
-                cv2.imread, [self.images_paths.iloc[k, 0] for k in indexes])
-            noised_images = pool.map(
-                cv2.imread, [self.images_paths.iloc[k, 1] for k in indexes])
+            images = pool.starmap(
+                cv2.imread, zip([self.images_paths.iloc[k, 0] for k in indexes], [cv2.IMREAD_GRAYSCALE] * self.batch_size))
+            noised_images = pool.starmap(
+                cv2.imread, zip([self.images_paths.iloc[k, 1] for k in indexes], [cv2.IMREAD_GRAYSCALE] * self.batch_size))
+
 
         images = np.array(images, np.float32) / 255
         noised_images = np.array(noised_images, np.float32) / 255
 
-        return noised_images, images
+        y = images.reshape(-1, *self.img_shape)
+        x = noised_images.reshape(-1, *self.img_shape)
+
+        return x, y

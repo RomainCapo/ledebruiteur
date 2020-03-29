@@ -66,7 +66,7 @@ def crop_img(img, shape=(100, 100)):
     Returns:
         Array -- The cropped image
     """
-    width, height, _ = img.shape
+    width, height = img.shape
 
     cx, cy = width / 2, height / 2
     sx, sy = cx - shape[0] / 2, cy - shape[1] / 2
@@ -93,7 +93,7 @@ def make_resized_dataframe(dataframe, resized_path="resized_images"):
 
     for index, row in tqdm(dataframe.iterrows()):
         path, size_x, size_y = row[0], row[1], row[2]
-        img = cv2.imread(path)
+        img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         croped_img = crop_img(img)
 
         path = os.path.join(resized_path, f"img{index}.jpg")
@@ -130,7 +130,7 @@ def make_noised_dataframe(dataframe, noise_list, noised_path="noised_images"):
         if not issubclass(type(rand_noise), Noise) and rand_noise is not None:
             raise ValueError("noise is not of valid type Noise")
 
-        img = cv2.imread(row['path'])
+        img = cv2.imread(row['path'], cv2.IMREAD_GRAYSCALE)
 
         noised_img = rand_noise.add(img)
         noised_class_name = type(rand_noise).__name__
