@@ -65,8 +65,8 @@ class GAN():
 
         X = Conv2DTranspose(filters=32, kernel_size=(
             3, 3), strides=(1, 1), padding="same")(X)
-        X = Conv2DTranspose(filters=16, kernel_size=(
-            3, 3), strides=(1, 1), padding="same")(X)
+        """X = Conv2DTranspose(filters=16, kernel_size=(
+            3, 3), strides=(1, 1), padding="same")(X)"""
 
         X = Add()([X, X_shortcut])
 
