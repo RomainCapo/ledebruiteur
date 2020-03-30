@@ -221,4 +221,6 @@ class GAN():
             print(
                 f"Validation generator loss {val_history['discriminator'][-1]}")
 
+            gc.collect()
+
         return train_history, val_history
