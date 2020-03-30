@@ -75,7 +75,7 @@ def crop_img(img, shape=(100, 100)):
     return img[int(sx): int(ex), int(sy): int(ey)]
 
 
-def make_resized_dataframe(dataframe, resized_path="resized_images"):
+def make_resized_dataframe(dataframe, img_shape=(100, 100), resized_path="resized_images"):
     """Preprocesses all the images contained in the dataframe
 
     Arguments:
@@ -94,7 +94,7 @@ def make_resized_dataframe(dataframe, resized_path="resized_images"):
     for index, row in tqdm(dataframe.iterrows()):
         path, size_x, size_y = row[0], row[1], row[2]
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-        croped_img = crop_img(img)
+        croped_img = crop_img(img, img_shape)
 
         path = os.path.join(resized_path, f"img{index}.jpg")
 

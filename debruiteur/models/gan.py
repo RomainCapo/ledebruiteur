@@ -29,11 +29,11 @@ class GAN():
         """
         super().__init__()
 
-        self.discriminator = self.build_discriminator()
+        self.discriminator = self.build_discriminator(img_shape)
         self.discriminator.compile(
             optimizer="Adam", loss="binary_crossentropy")
 
-        self.generator = self.build_generator()
+        self.generator = self.build_generator(img_shape)
         self.generator_outputs_dict = dict(
             [(layer.name, layer.output) for layer in self.generator.layers])
 
