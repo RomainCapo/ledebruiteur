@@ -34,8 +34,10 @@ class GAN():
             optimizer="Adam", loss="binary_crossentropy")
 
         self.generator = self.build_generator(img_shape)
-        self.generator_outputs_dict = dict(
-            [(layer.name, layer.output) for layer in self.generator.layers])
+        self.generator.compile(optimizer="Adam", loss="mean_squared_error")
+
+        """self.generator_outputs_dict = dict(
+            [(layer.name, layer.output) for layer in self.generator.layers])"""
 
     def build_generator(self, input_shape=(100, 100, 1)):
         """Builds the generator
@@ -169,11 +171,12 @@ class GAN():
                     Gz, fake)  # Classify fake images
                 epoch_train_disc_loss.append(Dg)
 
+                """
                 style_features, comb_features = self.get_feature_layers()
                 gen_loss = generator_loss(
                     y_train, Gz, Dg, style_features, comb_features)
                 self.generator.compile(
-                    optimizer="Adam", loss=gen_loss, experimental_run_tf_function=False)
+                    optimizer="Adam", loss="mse", experimental_run_tf_function=False)"""
 
                 g_loss = self.generator.train_on_batch(X_train, y_train)
                 epoch_train_gen_loss.append(g_loss)
@@ -195,23 +198,27 @@ class GAN():
 
                 Dg = self.discriminator.evaluate(Gz, fake)
                 epoch_val_disc_loss.append(Dg)
-
+                """
                 style_features, comb_features = self.get_feature_layers()
                 gen_loss = generator_loss(
                     y_val, Gz, Dg, style_features, comb_features)
-                self.generator.compile(optimizer="Adam", loss=gen_loss)
+                self.generator.compile(optimizer="Adam", loss=gen_loss)"""
+
                 g_loss = self.generator.test_on_batch(X_val, y_val)
                 epoch_val_gen_loss.append(g_loss)
 
-            discriminator_val_loss = np.mean(np.array(epoch_val_disc_loss), axis=0)
+            discriminator_val_loss = np.mean(
+                np.array(epoch_val_disc_loss), axis=0)
             generator_val_loss = np.mean(np.array(epoch_val_gen_loss), axis=0)
 
             val_history["generator"].append(generator_val_loss)
             val_history["discriminator"].append(discriminator_val_loss)
 
             print(f"Train generator loss {train_history['generator'][-1]}")
-            print(f"Train discriminator loss {train_history['discriminator'][-1]}")
+            print(
+                f"Train discriminator loss {train_history['discriminator'][-1]}")
             print(f"Validation generator loss {val_history['generator'][-1]}")
-            print(f"Validation generator loss {val_history['discriminator'][-1]}")
+            print(
+                f"Validation generator loss {val_history['discriminator'][-1]}")
 
         return train_history, val_history
