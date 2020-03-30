@@ -172,7 +172,7 @@ class GAN():
                 style_features, comb_features = self.get_feature_layers()
                 gen_loss = generator_loss(
                     y_train, Gz, Dg, style_features, comb_features)
-                self.generator.compile(optimizer="Adam", loss=gen_loss)
+                self.generator.compile(optimizer="Adam", loss=gen_loss, experimental_run_tf_function=False)
 
                 g_loss = self.generator.train_on_batch(X_train, y_train)
                 epoch_train_gen_loss.append(g_loss)
