@@ -11,7 +11,7 @@ from tensorflow.keras.initializers import glorot_uniform
 from tensorflow.keras.layers import Add, Conv2D, Conv2DTranspose, Dense, Input, Flatten, Lambda
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.utils.generic_utils import Progbar
+from tensorflow.keras.utils import Progbar
 import numpy as np
 
 from .blocks import convolutional_block, residual_block
