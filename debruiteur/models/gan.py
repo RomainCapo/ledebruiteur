@@ -7,6 +7,7 @@ Image Processing course
 2019-2020
 """
 from collections import defaultdict
+import gc
 from tensorflow.keras.initializers import glorot_uniform
 from tensorflow.keras.layers import Add, Conv2D, Conv2DTranspose, Dense, Input, Flatten, Lambda
 from tensorflow.keras.models import Model
