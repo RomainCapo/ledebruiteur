@@ -7,7 +7,7 @@ Image Processing course
 2019-2020
 """
 
-import keras.backend as K
+import tensorflow.keras.backend as K
 
 
 def generator_loss(y_true, y_pred, Dg, style_features, comb_features):

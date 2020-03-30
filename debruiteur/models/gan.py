@@ -7,12 +7,12 @@ Image Processing course
 2019-2020
 """
 from collections import defaultdict
-from keras.initializers import glorot_uniform
-from keras.layers import Conv2D, Conv2DTranspose, Dense, Input, Flatten, Lambda
-from keras.layers.merge import Add
-from keras.models import Model
-from keras.optimizers import Adam
-from keras.utils.generic_utils import Progbar
+from tensorflow.keras.initializers import glorot_uniform
+from tensorflow.keras.layers import Conv2D, Conv2DTranspose, Dense, Input, Flatten, Lambda
+from tensorflow.keras.layers.merge import Add
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.utils.generic_utils import Progbar
 import numpy as np
 
 from .blocks import convolutional_block, residual_block

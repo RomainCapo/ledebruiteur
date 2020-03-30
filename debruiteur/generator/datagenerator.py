@@ -8,7 +8,7 @@ Image Processing course
 """
 
 import cv2
-from keras.utils import Sequence
+from tensorflow.keras.utils import Sequence
 import multiprocessing as mp
 import numpy as np
 import os

@@ -7,10 +7,10 @@ Image Processing course
 2019-2020
 """
 
-import keras.backend as K
-from keras.initializers import RandomNormal
-from keras.layers import Activation, BatchNormalization, Conv2D
-from keras.layers.merge import Add
+import tensorflow.keras.backend as K
+from tensorflow.keras.initializers import RandomNormal
+from tensorflow.keras.layers import Activation, BatchNormalization, Conv2D
+from tensorflow.keras.layers.merge import Add
 
 
 def convolutional_block(X, filter, k_size, act_layer_name, stride=1, activation="relu"):

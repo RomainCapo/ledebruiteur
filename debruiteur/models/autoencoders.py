@@ -7,8 +7,8 @@ Image Processing course
 2019-2020
 """
 
-from keras.layers import Conv2D, Dense, MaxPool2D, UpSampling2D
-from keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, Dense, MaxPool2D, UpSampling2D
+from tensorflow.keras.models import Sequential
 
 
 def build_conv_autoencoder(input_shape=(100, 100, 1), optimizer="adam", loss="mse"):
