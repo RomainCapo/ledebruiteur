@@ -193,7 +193,7 @@ class GAN():
             for X_val, y_val in val_gen:
                 Gz = self.generator.predict(X_val)
 
-                Dg = self.discriminator.predict(Gz)
+                Dg = self.discriminator.evaluate(Gz, fake)
                 epoch_val_disc_loss.append(Dg)
 
                 style_features, comb_features = self.get_feature_layers()
@@ -203,16 +203,15 @@ class GAN():
                 g_loss = self.generator.test_on_batch(X_val, y_val)
                 epoch_val_gen_loss.append(g_loss)
 
-            discriminator_val_loss = np.mean(
-                np.array(epoch_val_disc_loss), axis=0)
+            discriminator_val_loss = np.mean(np.array(epoch_val_disc_loss), axis=0)
             generator_val_loss = np.mean(np.array(epoch_val_gen_loss), axis=0)
 
             val_history["generator"].append(generator_val_loss)
             val_history["discriminator"].append(discriminator_val_loss)
 
-            print(f"Train generator loss {train_history['generator']}")
-            print(f"Train discriminator loss {train_history['discriminator']}")
-            print(f"Validation generator loss {val_history['generator']}")
-            print(f"Discriminator generator loss {val_history['discriminator']}")
+            print(f"Train generator loss {train_history['generator'][-1]}")
+            print(f"Train discriminator loss {train_history['discriminator'][-1]}")
+            print(f"Validation generator loss {val_history['generator'][-1]}")
+            print(f"Validation generator loss {val_history['discriminator'][-1]}")
 
         return train_history, val_history
