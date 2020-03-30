@@ -22,7 +22,7 @@ class Noise(ABC):
             img {Array} -- Numpy like array of image
 
         Raises:
-            NotImplementedError:
+            NotImplementedError: Subclass must provide an implementation
         """
         raise NotImplementedError(
             "add method must be defined to use Noise base class")

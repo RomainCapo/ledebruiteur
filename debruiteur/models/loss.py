@@ -10,19 +10,28 @@ Image Processing course
 import keras.backend as K
 
 
-def generator_loss(y_true, y_pred, Dg):
+def generator_loss(y_true, y_pred, Dg, style_features, comb_features):
     """Generator loss
 
     Arguments:
         y_true {Array} -- Ground truth
         y_pred {Array} -- Predicted array
+        Dg {float} -- Discriminator loss on fake images
+        style_features {list} -- Style features
+        comb_features {list} -- Combination features
 
     Returns:
         float -- Generator loss
     """
 
     def loss(y_true, y_pred):
-        return 0.5 * adversial_loss(Dg) + pixel_loss(y_true, y_pred) + style_loss(y_true, y_pred) # + smooth_loss(Gz)
+        s_loss = 0
+        for style_feature, comb_feature in zip(style_features, comb_features):
+            s_loss += style_loss(style_feature, comb_feature)
+
+        s_loss /= len(style_features)
+
+        return 0.5 * adversial_loss(Dg) + pixel_loss(y_true, y_pred) + s_loss
 
     return loss
 
@@ -40,18 +49,18 @@ def pixel_loss(y_true, y_pred):
     return K.sqrt(K.mean(K.square(y_pred - y_true)))
 
 
-def style_loss(y_true, y_pred):
+def style_loss(style_feature, comb_feature):
     """Style loss
 
     Arguments:
-        y_true {Array} -- Ground truth
-        y_pred {Array} -- Predicted array]
+        style_feature {Array} -- Style feature
+        comb_feature {Array} -- Combination feature
 
     Returns:
         float -- style loss
     """
-    S = gram_matrix(y_true)
-    C = gram_matrix(y_pred)
+    S = gram_matrix(style_feature)
+    C = gram_matrix(comb_feature)
     channels = 1
     size = 100 * 100
     return K.sum(K.square(S - C)) / (4.0 * (channels ** 2) * (size ** 2))
@@ -81,9 +90,3 @@ def adversial_loss(x):
         float -- Adversial loss
     """
     return -K.mean(K.log(x))
-
-
-def smooth_loss(x):
-    b, w, h, c = x.shape
-    # TODO
-    pass
