@@ -11,7 +11,7 @@ import os
 import shutil
 import numpy as np
 import pandas as pd
-from keras.models import load_model as k_load_model
+from tensorflow.keras.models import load_model as k_load_model
 
 
 def init_dir(directory, delete_existing=True):
