@@ -74,7 +74,7 @@ class DataGenerator(Sequence):
         images = np.array(images, np.float32) / 255
         noised_images = np.array(noised_images, np.float32) / 255
 
-        y = images.reshape(-1, *self.img_shape)
-        x = noised_images.reshape(-1, *self.img_shape)
+        y = images[..., np.newaxis]
+        x = noised_images[..., np.newaxis]
 
         return x, y

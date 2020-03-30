@@ -53,19 +53,19 @@ class GAN():
         X_shortcut = X
         X = convolutional_block(X, filter=64, k_size=3,
                                 act_layer_name="gen_conv2_relu")
-        X = convolutional_block(X, filter=128, k_size=3,
-                                act_layer_name="gen_conv3_relu")
+        """X = convolutional_block(X, filter=128, k_size=3,
+                                act_layer_name="gen_conv3_relu")"""
 
-        X = residual_block(X, filter=128, k_size=3, act_layer_names=(
+        X = residual_block(X, filter=64, k_size=3, act_layer_names=(
             "gen_res1_conv1_relu", "gen_res1_conv2_relu"))
-        X = residual_block(X, filter=128, k_size=3, act_layer_names=(
+        """X = residual_block(X, filter=128, k_size=3, act_layer_names=(
             "gen_res2_conv1_relu", "gen_res2_conv2_relu"))
         X = residual_block(X, filter=128, k_size=3, act_layer_names=(
-            "gen_res3_conv1_relu", "gen_res3_conv2_relu"))
+            "gen_res3_conv1_relu", "gen_res3_conv2_relu"))"""
 
-        X = Conv2DTranspose(filters=64, kernel_size=(
-            3, 3), strides=(1, 1), padding="same")(X)
         X = Conv2DTranspose(filters=32, kernel_size=(
+            3, 3), strides=(1, 1), padding="same")(X)
+        X = Conv2DTranspose(filters=16, kernel_size=(
             3, 3), strides=(1, 1), padding="same")(X)
 
         X = Add()([X, X_shortcut])
@@ -91,14 +91,14 @@ class GAN():
         """
         X_input = Input(input_shape)
 
-        X = convolutional_block(
-            X_input, filter=48, k_size=4, act_layer_name="disc_conv1_relu", stride=2)
+        X = convolutional_block(X_input, filter=48, k_size=4,
+                                act_layer_name="disc_conv1_relu", stride=2)
         X = convolutional_block(X, filter=96, k_size=4,
                                 act_layer_name="disco_conv2_relu", stride=2)
-        X = convolutional_block(X, filter=192, k_size=4,
+        """X = convolutional_block(X, filter=192, k_size=4,
                                 act_layer_name="disco_conv3_relu", stride=2)
         X = convolutional_block(X, filter=384, k_size=4,
-                                act_layer_name="disco_conv4_relu", stride=1)
+                                act_layer_name="disco_conv4_relu", stride=1)"""
         X = Conv2D(filters=1, kernel_size=(4, 4), strides=(1, 1))(X)
         X = Flatten()(X)
         X = Dense(units=1, activation="sigmoid")(X)
@@ -113,8 +113,7 @@ class GAN():
         Returns:
             tuple -- Tuple of array coinaining (style features, combination features)
         """
-        feature_layers = ["gen_conv1_relu", "gen_conv2_relu", "gen_conv3_relu", "gen_res1_conv1_relu",
-                          "gen_res1_conv2_relu", "gen_res1_conv1_relu", "gen_res1_conv2_relu", "gen_res3_conv1_relu", "gen_res3_conv2_relu"]
+        feature_layers = ["gen_conv1_relu", "gen_conv2_relu", "gen_res1_conv1_relu", "gen_res1_conv2_relu"]
 
         comb_features = []
         style_features = []
@@ -172,7 +171,8 @@ class GAN():
                 style_features, comb_features = self.get_feature_layers()
                 gen_loss = generator_loss(
                     y_train, Gz, Dg, style_features, comb_features)
-                self.generator.compile(optimizer="Adam", loss=gen_loss, experimental_run_tf_function=False)
+                self.generator.compile(
+                    optimizer="Adam", loss=gen_loss, experimental_run_tf_function=False)
 
                 g_loss = self.generator.train_on_batch(X_train, y_train)
                 epoch_train_gen_loss.append(g_loss)
