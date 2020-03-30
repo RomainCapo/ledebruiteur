@@ -113,7 +113,8 @@ class GAN():
         Returns:
             tuple -- Tuple of array coinaining (style features, combination features)
         """
-        feature_layers = ["gen_conv1_relu", "gen_conv2_relu", "gen_res1_conv1_relu", "gen_res1_conv2_relu"]
+        feature_layers = ["gen_conv1_relu", "gen_conv2_relu",
+                          "gen_res1_conv1_relu", "gen_res1_conv2_relu"]
 
         comb_features = []
         style_features = []
@@ -195,7 +196,9 @@ class GAN():
                 Dg = self.discriminator.predict(Gz)
                 epoch_val_disc_loss.append(Dg)
 
-                gen_loss = generator_loss(y_val, Gz, Dg)
+                style_features, comb_features = self.get_feature_layers()
+                gen_loss = generator_loss(
+                    y_val, Gz, Dg, style_features, comb_features)
                 self.generator.compile(optimizer="Adam", loss=gen_loss)
                 g_loss = self.generator.test_on_batch(X_val, y_val)
                 epoch_val_gen_loss.append(g_loss)
