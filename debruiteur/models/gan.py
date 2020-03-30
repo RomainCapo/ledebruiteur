@@ -185,8 +185,8 @@ class GAN():
             generator_train_loss = np.mean(
                 np.array(epoch_train_gen_loss), axis=0)
 
-            train_history['generator'].append(generator_train_loss)
-            train_history['discriminator'].append(discriminator_train_loss)
+            train_history["generator"].append(generator_train_loss)
+            train_history["discriminator"].append(discriminator_train_loss)
 
             print(f"Validation for epoch {epoch}")
 
@@ -207,17 +207,12 @@ class GAN():
                 np.array(epoch_val_disc_loss), axis=0)
             generator_val_loss = np.mean(np.array(epoch_val_gen_loss), axis=0)
 
-            val_history['generator'].append(generator_val_loss)
-            val_history['discriminator'].append(discriminator_val_loss)
+            val_history["generator"].append(generator_val_loss)
+            val_history["discriminator"].append(discriminator_val_loss)
 
-            ROW_FMT = '{0:<22s} | {1:<4.2f} | {2:<15.4f} | {3:<5.4f}'
-            print(ROW_FMT.format('generator (train)',
-                                 *train_history['generator'][-1]))
-            print(ROW_FMT.format('generator (test)',
-                                 *val_history['generator'][-1]))
-            print(ROW_FMT.format('discriminator (train)',
-                                 *train_history['discriminator'][-1]))
-            print(ROW_FMT.format('discriminator (test)',
-                                 *val_history['discriminator'][-1]))
+            print(f"Train generator loss {train_history['generator']}")
+            print(f"Train discriminator loss {train_history['discriminator']}")
+            print(f"Validation generator loss {val_history['generator']}")
+            print(f"Discriminator generator loss {val_history['discriminator']}")
 
         return train_history, val_history
