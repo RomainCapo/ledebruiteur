@@ -114,7 +114,7 @@ def median_filter(img, kernel_size=5):
     return cv2.medianBlur(img, kernel_size)
 
 
-def conservative_filter(img, filter_size):
+def conservative_filter(img, filter_size=5):
     """Conservative filter for image noise reduction
     Code from : https://towardsdatascience.com/image-filters-in-python-26ee938e57d2
 

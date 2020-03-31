@@ -6,21 +6,17 @@ He-Arc, INF3dlm-a
 Image Processing course
 2019-2020
 """
-from collections import defaultdict
-import gc
-import tensorflow.keras.backend as K
-from tensorflow.keras.initializers import glorot_uniform
+from IPython import display
+import matplotlib.pyplot as plt
+import tensorflow as tf
 from tensorflow.keras.layers import Add, Conv2D, Conv2DTranspose, Dense, Input, Flatten, Lambda
 from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import Progbar
-import numpy as np
+from tensorflow.keras.losses import BinaryCrossentropy
+from tensorflow.keras.optimizers import Adam
 
 from .blocks import convolutional_block, residual_block
-from .loss import generator_loss
 
-
-from memory_profiler import profile
 
 class GAN():
     """Conditional GAN for image denoising"""
@@ -34,13 +30,12 @@ class GAN():
         super().__init__()
 
         self.discriminator = self.build_discriminator(img_shape)
-        self.discriminator.compile(
-            optimizer="Adam", loss="binary_crossentropy")
+        self.discriminator_opt = Adam()
 
         self.generator = self.build_generator(img_shape)
+        self.generator_opt = Adam()
 
-        self.generator_outputs_dict = dict(
-            [(layer.name, layer.output) for layer in self.generator.layers])
+        self.cross_entropy = BinaryCrossentropy(from_logits=True)
 
     def build_generator(self, input_shape=(100, 100, 1)):
         """Builds the generator
@@ -100,27 +95,85 @@ class GAN():
 
         return model
 
-    def get_feature_layers(self):
-        """Gets the feature layers
+    def discriminator_loss(self, real_output, fake_output):
+        """Discriminator loss, cross entropy
+
+        Arguments:
+            real_output {Array} -- Discriminator predictions on real images
+            fake_output {Array} -- Discriminator predictions on fake images
 
         Returns:
-            tuple -- Tuple of array coinaining (style features, combination features)
+            [type] -- [description]
         """
-        feature_layers = ["gen_conv1_relu", "gen_conv2_relu",
-                          "gen_res1_conv1_relu", "gen_res1_conv2_relu"]
+        real_loss = self.cross_entropy(tf.ones_like(real_output), real_output)
+        fake_loss = self.cross_entropy(tf.zeros_like(fake_output), fake_output)
+        total_loss = real_loss + fake_loss
+        return total_loss
 
-        comb_features = []
-        style_features = []
-        for layer_name in feature_layers:
-            layer_features = self.generator_outputs_dict[layer_name]
-            style_reference_features = layer_features[1, :, :, :]
-            style_features.append(style_reference_features)
-            combination_features = layer_features[2, :, :, :]
-            comb_features.append(combination_features)
+    def generator_loss(self, real_image, gen_images, fake_output):
+        """Generator loss, uses pixel loss and adversial loss
 
-        return style_features, comb_features
+        Arguments:
+            real_image {Array} -- Real images
+            gen_images {Array} -- Fake images
+            fake_output {Array} -- Discriminator prediction on fake images
 
-    def train(self, train_gen, val_gen, batch_size=32, epochs=10):
+        Returns:
+            float -- Loss
+        """
+        pixel_loss = tf.math.sqrt(tf.math.reduce_mean(
+            tf.square(tf.math.subtract(real_image, gen_images))))
+        adversial_loss = -tf.reduce_mean(tf.math.log(fake_output))
+        return 0.5 * adversial_loss + pixel_loss
+
+    def generate_and_plot_images(self, epoch, test_input):
+        """Generate fake image and plot them
+
+        Arguments:
+            epoch {int} -- Current epoch
+            test_input {Array} -- Noised images
+        """
+        predictions = self.generator(test_input, training=False)
+
+        fig = plt.figure(figsize=(8, 8))
+
+        for i in range(predictions.shape[0]):
+            fig.add_subplot(4, 2, i + 1)
+            plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
+            plt.axis('off')
+
+        plt.show()
+
+    @tf.function()
+    def train_step(self, noised_images, images):
+        """Perform a train step for a batch
+
+        Arguments:
+            noised_images {Array} -- Images with nois
+            images {Array} -- Original images
+        """
+        with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+            generated_images = self.generator(noised_images, training=True)
+
+            real_output = self.discriminator(images, training=True)
+            fake_output = self.discriminator(generated_images, training=True)
+
+            gen_loss = self.generator_loss(
+                images, generated_images, fake_output)
+            disc_loss = self.discriminator_loss(real_output, fake_output)
+
+            gradients_of_generator = gen_tape.gradient(
+                gen_loss, self.generator.trainable_variables)
+
+        gradients_of_discriminator = disc_tape.gradient(
+            disc_loss, self.discriminator.trainable_variables)
+
+        self.generator_opt.apply_gradients(
+            zip(gradients_of_generator, self.generator.trainable_variables))
+        self.discriminator_opt.apply_gradients(
+            zip(gradients_of_discriminator, self.discriminator.trainable_variables))
+
+    def train(self, train_gen, val_gen, epochs=10):
         """Trains the gan
 
         Arguments:
@@ -128,17 +181,11 @@ class GAN():
             val_gen {Sequence} -- Validation data generator
 
         Keyword Arguments:
-            batch_size {int} -- Batch size (default: {32})
             epochs {int} -- Epochs (default: {10})
 
         Returns:
             tuple -- (train loss history, validation loss history)
         """
-        valid = np.ones((batch_size, 1))  # When true image class is 0
-        fake = np.zeros((batch_size, 1))  # When fake image class is 1
-
-        train_history = defaultdict(list)
-        val_history = defaultdict(list)
 
         for epoch in range(1, epochs + 1):
 
@@ -147,75 +194,9 @@ class GAN():
             num_batches = len(train_gen)
             progress_bar = Progbar(target=num_batches)
 
-            epoch_train_gen_loss = []
-            epoch_train_disc_loss = []
-            epoch_val_gen_loss = []
-            epoch_val_disc_loss = []
-
-            @profile
-            def test():
-                # X_train : noised images, y_train : original images
-
-                Gz = self.generator.predict(X_train)
-
-                Dx = self.discriminator.train_on_batch(
-                    X_train, valid)  # Classify original images
-                Dg = self.discriminator.train_on_batch(
-                    Gz, fake)  # Classify fake images
-                epoch_train_disc_loss.append(Dg)
-
-                style_features, comb_features = self.get_feature_layers()
-                self.generator.compile(
-                    optimizer="Adam", loss=generator_loss(
-                        y_train, Gz, Dg, style_features, comb_features), experimental_run_tf_function=False)
-
-                g_loss = self.generator.train_on_batch(X_train, y_train)
-                epoch_train_gen_loss.append(g_loss)
-
+            for index, (X_train, y_train) in enumerate(train_gen):
+                self.train_step(X_train, y_train)
                 progress_bar.update(index + 1)
 
-                #K.clear_session()
-
-            for index, (X_train, y_train) in enumerate(train_gen):
-                test()
-
-            discriminator_train_loss = np.mean(
-                np.array(epoch_train_disc_loss), axis=0)
-            generator_train_loss = np.mean(
-                np.array(epoch_train_gen_loss), axis=0)
-
-            train_history["generator"].append(generator_train_loss)
-            train_history["discriminator"].append(discriminator_train_loss)
-
-            print(f"Validation for epoch {epoch}")
-
-            for X_val, y_val in val_gen:
-                Gz = self.generator.predict(X_val)
-
-                Dg = self.discriminator.evaluate(Gz, fake)
-                epoch_val_disc_loss.append(Dg)
-
-                style_features, comb_features = self.get_feature_layers()
-                self.generator.compile(optimizer="Adam", loss=generator_loss(
-                    y_val, Gz, Dg, style_features, comb_features), experimental_run_tf_function=False)
-
-                g_loss = self.generator.test_on_batch(X_val, y_val)
-                epoch_val_gen_loss.append(g_loss)
-
-            discriminator_val_loss = np.mean(
-                np.array(epoch_val_disc_loss), axis=0)
-            generator_val_loss = np.mean(np.array(epoch_val_gen_loss), axis=0)
-
-            val_history["generator"].append(generator_val_loss)
-            val_history["discriminator"].append(discriminator_val_loss)
-
-            print(f"Train generator loss {train_history['generator'][-1]}")
-            print(
-                f"Train discriminator loss {train_history['discriminator'][-1]}")
-            print(f"Validation generator loss {val_history['generator'][-1]}")
-            print(
-                f"Validation discriminator loss {val_history['discriminator'][-1]}")
-
-            gc.collect()
-
-        return train_history, val_history
+            display.clear_output(wait=True)
+            self.generate_and_plot_images(epoch, val_gen[epoch][0])
