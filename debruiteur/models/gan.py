@@ -111,17 +111,18 @@ class GAN():
         total_loss = real_loss + fake_loss
         return total_loss
 
-    def generator_loss(self, real_images, gen_images):
+    def generator_loss(self, real_images, gen_images, fake_output):
         """Generator loss, uses pixel loss and adversial loss
 
         Arguments:
-            real_images {Array} -- Real images
+            real_image {Array} -- Real images
             gen_images {Array} -- Fake images
+            fake_output {Array} -- Discriminator prediction on fake images
 
         Returns:
             float -- Loss
         """
-        return self.mean_squared_error(real_images, gen_images)
+        return self.mean_squared_error(real_images, gen_images) + self.cross_entropy(tf.ones_like(fake_output), fake_output)
 
     def generate_and_plot_images(self, epoch, test_input):
         """Generate fake image and plot them
@@ -155,7 +156,8 @@ class GAN():
             real_output = self.discriminator(images, training=True)
             fake_output = self.discriminator(generated_images, training=True)
 
-            gen_loss = self.generator_loss(images, generated_images)
+            gen_loss = self.generator_loss(
+                images, generated_images, fake_output)
             disc_loss = self.discriminator_loss(real_output, fake_output)
 
             gradients_of_generator = gen_tape.gradient(
