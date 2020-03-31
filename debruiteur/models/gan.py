@@ -35,7 +35,6 @@ class GAN():
             optimizer="Adam", loss="binary_crossentropy")
 
         self.generator = self.build_generator(img_shape)
-        #self.generator.compile(optimizer="Adam", loss="mean_squared_error")
 
         self.generator_outputs_dict = dict(
             [(layer.name, layer.output) for layer in self.generator.layers])
@@ -56,20 +55,12 @@ class GAN():
         X_shortcut = X
         X = convolutional_block(X, filter=64, k_size=3,
                                 act_layer_name="gen_conv2_relu")
-        """X = convolutional_block(X, filter=128, k_size=3,
-                                act_layer_name="gen_conv3_relu")"""
 
         X = residual_block(X, filter=64, k_size=3, act_layer_names=(
             "gen_res1_conv1_relu", "gen_res1_conv2_relu"))
-        """X = residual_block(X, filter=128, k_size=3, act_layer_names=(
-            "gen_res2_conv1_relu", "gen_res2_conv2_relu"))
-        X = residual_block(X, filter=128, k_size=3, act_layer_names=(
-            "gen_res3_conv1_relu", "gen_res3_conv2_relu"))"""
 
         X = Conv2DTranspose(filters=32, kernel_size=(
             3, 3), strides=(1, 1), padding="same")(X)
-        """X = Conv2DTranspose(filters=16, kernel_size=(
-            3, 3), strides=(1, 1), padding="same")(X)"""
 
         X = Add()([X, X_shortcut])
 
@@ -98,10 +89,6 @@ class GAN():
                                 act_layer_name="disc_conv1_relu", stride=2)
         X = convolutional_block(X, filter=96, k_size=4,
                                 act_layer_name="disco_conv2_relu", stride=2)
-        """X = convolutional_block(X, filter=192, k_size=4,
-                                act_layer_name="disco_conv3_relu", stride=2)
-        X = convolutional_block(X, filter=384, k_size=4,
-                                act_layer_name="disco_conv4_relu", stride=1)"""
         X = Conv2D(filters=1, kernel_size=(4, 4), strides=(1, 1))(X)
         X = Flatten()(X)
         X = Dense(units=1, activation="sigmoid")(X)
@@ -175,7 +162,7 @@ class GAN():
                 style_features, comb_features = self.get_feature_layers()
                 self.generator.compile(
                     optimizer="Adam", loss=generator_loss(
-                        y_train, Gz, Dg, style_features, comb_features))
+                        y_train, Gz, Dg, style_features, comb_features), experimental_run_tf_function=False)
 
                 g_loss = self.generator.train_on_batch(X_train, y_train)
                 epoch_train_gen_loss.append(g_loss)
@@ -200,7 +187,7 @@ class GAN():
 
                 style_features, comb_features = self.get_feature_layers()
                 self.generator.compile(optimizer="Adam", loss=generator_loss(
-                    y_val, Gz, Dg, style_features, comb_features))
+                    y_val, Gz, Dg, style_features, comb_features), experimental_run_tf_function=False)
 
                 g_loss = self.generator.test_on_batch(X_val, y_val)
                 epoch_val_gen_loss.append(g_loss)
@@ -217,7 +204,7 @@ class GAN():
                 f"Train discriminator loss {train_history['discriminator'][-1]}")
             print(f"Validation generator loss {val_history['generator'][-1]}")
             print(
-                f"Validation generator loss {val_history['discriminator'][-1]}")
+                f"Validation discriminator loss {val_history['discriminator'][-1]}")
 
             gc.collect()
 
