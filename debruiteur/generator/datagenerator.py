@@ -72,7 +72,11 @@ class DataGenerator(Sequence):
         images = np.array(images, np.float32) / 255
         noised_images = np.array(noised_images, np.float32) / 255
 
-        images = images[..., np.newaxis]
-        noised_images = noised_images[..., np.newaxis]
+        if len(self.img_shape) == 3:
+            images = images[..., np.newaxis]
+            noised_images = noised_images[..., np.newaxis]
+        else:
+            images = images.reshape(-1, *self.img_shape)
+            noised_images = noised_images.reshape(-1, *self.img_shape)
 
         return noised_images, images

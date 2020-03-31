@@ -112,7 +112,7 @@ class GAN():
         return total_loss
 
     def generator_loss(self, real_images, gen_images, fake_output):
-        """Generator loss, uses pixel loss and adversial loss
+        """Generator loss, uses mean squared error and binary cross entropy
 
         Arguments:
             real_image {Array} -- Real images
