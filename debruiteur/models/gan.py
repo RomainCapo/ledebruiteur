@@ -12,7 +12,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import Add, Conv2D, Conv2DTranspose, Dense, Input, Flatten, Lambda
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import Progbar
-from tensorflow.keras.losses import BinaryCrossentropy
+from tensorflow.keras.losses import BinaryCrossentropy, MeanSquaredError
 from tensorflow.keras.optimizers import Adam
 
 from .blocks import convolutional_block, residual_block
@@ -36,6 +36,7 @@ class GAN():
         self.generator_opt = Adam()
 
         self.cross_entropy = BinaryCrossentropy(from_logits=True)
+        self.mean_squared_error = MeanSquaredError()
 
     def build_generator(self, input_shape=(100, 100, 1)):
         """Builds the generator
@@ -110,21 +111,17 @@ class GAN():
         total_loss = real_loss + fake_loss
         return total_loss
 
-    def generator_loss(self, real_image, gen_images, fake_output):
+    def generator_loss(self, real_images, gen_images):
         """Generator loss, uses pixel loss and adversial loss
 
         Arguments:
-            real_image {Array} -- Real images
+            real_images {Array} -- Real images
             gen_images {Array} -- Fake images
-            fake_output {Array} -- Discriminator prediction on fake images
 
         Returns:
             float -- Loss
         """
-        pixel_loss = tf.math.sqrt(tf.math.reduce_mean(
-            tf.square(tf.math.subtract(real_image, gen_images))))
-        adversial_loss = -tf.reduce_mean(tf.math.log(fake_output))
-        return 0.5 * adversial_loss + pixel_loss
+        return self.mean_squared_error(real_images, gen_images)
 
     def generate_and_plot_images(self, epoch, test_input):
         """Generate fake image and plot them
@@ -158,8 +155,7 @@ class GAN():
             real_output = self.discriminator(images, training=True)
             fake_output = self.discriminator(generated_images, training=True)
 
-            gen_loss = self.generator_loss(
-                images, generated_images, fake_output)
+            gen_loss = self.generator_loss(images, generated_images)
             disc_loss = self.discriminator_loss(real_output, fake_output)
 
             gradients_of_generator = gen_tape.gradient(
