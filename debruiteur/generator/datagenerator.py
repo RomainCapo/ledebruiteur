@@ -8,11 +8,10 @@ Image Processing course
 """
 
 import cv2
-from tensorflow.keras.utils import Sequence
-import multiprocessing as mp
+import gc
 import numpy as np
 import os
-
+from tensorflow.keras.utils import Sequence
 
 class DataGenerator(Sequence):
     """Keras Sequence image data generator"""
@@ -51,6 +50,7 @@ class DataGenerator(Sequence):
         self.indexes = np.arange(len(self.images_paths))
         if self.shuffle:
             np.random.shuffle(self.indexes)
+        gc.collect()
 
     def __getitem__(self, index):
         """Get next
@@ -64,17 +64,15 @@ class DataGenerator(Sequence):
         indexes = self.indexes[index *
                                self.batch_size: (index + 1) * self.batch_size]
 
-        with mp.Pool() as pool:
-            images = pool.starmap(
-                cv2.imread, zip([self.images_paths.iloc[k, 0] for k in indexes], [cv2.IMREAD_GRAYSCALE] * self.batch_size))
-            noised_images = pool.starmap(
-                cv2.imread, zip([self.images_paths.iloc[k, 1] for k in indexes], [cv2.IMREAD_GRAYSCALE] * self.batch_size))
-
+        images = [cv2.imread(self.images_paths.iloc[k, 0],
+                             cv2.IMREAD_GRAYSCALE) for k in indexes]
+        noised_images = [cv2.imread(
+            self.images_paths.iloc[k, 1], cv2.IMREAD_GRAYSCALE) for k in indexes]
 
         images = np.array(images, np.float32) / 255
         noised_images = np.array(noised_images, np.float32) / 255
 
-        y = images[..., np.newaxis]
-        x = noised_images[..., np.newaxis]
+        images = images[..., np.newaxis]
+        noised_images = noised_images[..., np.newaxis]
 
-        return x, y
+        return noised_images, images

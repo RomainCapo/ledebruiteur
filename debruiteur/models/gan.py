@@ -8,6 +8,7 @@ Image Processing course
 """
 from collections import defaultdict
 import gc
+import tensorflow.keras.backend as K
 from tensorflow.keras.initializers import glorot_uniform
 from tensorflow.keras.layers import Add, Conv2D, Conv2DTranspose, Dense, Input, Flatten, Lambda
 from tensorflow.keras.models import Model
@@ -18,6 +19,8 @@ import numpy as np
 from .blocks import convolutional_block, residual_block
 from .loss import generator_loss
 
+
+from memory_profiler import profile
 
 class GAN():
     """Conditional GAN for image denoising"""
@@ -149,8 +152,10 @@ class GAN():
             epoch_val_gen_loss = []
             epoch_val_disc_loss = []
 
-           # X_train : noised images, y_train : original images
-            for index, (X_train, y_train) in enumerate(train_gen):
+            @profile
+            def test():
+                # X_train : noised images, y_train : original images
+
                 Gz = self.generator.predict(X_train)
 
                 Dx = self.discriminator.train_on_batch(
@@ -168,6 +173,11 @@ class GAN():
                 epoch_train_gen_loss.append(g_loss)
 
                 progress_bar.update(index + 1)
+
+                #K.clear_session()
+
+            for index, (X_train, y_train) in enumerate(train_gen):
+                test()
 
             discriminator_train_loss = np.mean(
                 np.array(epoch_train_disc_loss), axis=0)
