@@ -19,18 +19,27 @@ from ..utils.utils import init_dir
 from ..noise.noise import *
 
 
-def make_original_dataframe(base_path="images"):
+def make_original_dataframe(base_path="images", sample_folders=None):
     """Makes a dataframe from an image directory
 
     Keyword Arguments:
         base_path {str} -- Image directory's path (default: {"images"})
+        sample_folders {int} -- Number of sample folders to take (default: {None})
 
     Returns:
         DataFrame -- Columns : [path : image path, size_x: image width, size_y: image height]
     """
+    img_dirs = os.listdir(base_path)
+
+    if sample_folders > len(img_dirs):
+        raise  ValueError(f"Wrong number of samples {sample_folders} for number of folders {len(img_dirs)}")
+
     np.random.seed(42)
 
-    images_folder = np.random.choice(os.listdir(base_path), 20)
+    if sample_folders:
+        images_folder = np.random.choice(img_dirs, 20)
+    else:
+        image_folder = img_dirs
 
     images_path = []
     images_size = []
