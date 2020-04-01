@@ -19,7 +19,7 @@ from ..utils.utils import init_dir
 from ..noise.noise import *
 
 
-def make_original_dataframe(base_path="images", sample_folders=None):
+def make_original_dataframe(base_path="images", sample_folders=20):
     """Makes a dataframe from an image directory
 
     Keyword Arguments:
@@ -36,10 +36,7 @@ def make_original_dataframe(base_path="images", sample_folders=None):
 
     np.random.seed(42)
 
-    if sample_folders:
-        images_folder = np.random.choice(img_dirs, 20)
-    else:
-        image_folder = img_dirs
+    images_folder = np.random.choice(img_dirs, sample_folders)
 
     images_path = []
     images_size = []
