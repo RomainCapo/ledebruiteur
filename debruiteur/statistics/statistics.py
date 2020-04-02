@@ -13,37 +13,35 @@ import statistics
 from ..metrics.metrics import *
 
 
-def compute_noise_reduction_method_statistics(df_images, noise_reduction_methods, img_size=64):
+def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods, img_size=100, verbose=True):
     """Compute the score of each filter for each metrics
 
     Arguments:
-        df_images {Dataframe} -- Dataframe that containt two columns, first with original image path, the second with noised image path 
+        dg_images {DataGenrator} -- DataGenerator that contain the original images and the noised_image
         noise_reduction_methods {list} -- List of tuple, each tuple contain the name of the noise reduction method and the noise reduction function
 
     Keyword Arguments:
         img_size {int} -- size of the image, assume the image are square (default: {100})
+        verbose {bool} -- display the progression of the statistics (default: {True})
 
     Returns:
         Dataframe -- Dataframe containing on each column the score with a metric for each noise reduction method
     """
 
+def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods, img_size=100, verbose=True):
     df_stats = pd.DataFrame(columns=['MSE', 'NRMSE', 'PSNR', 'SSIM'])
+
+    noised_images, original_images = dg_images[0]
+
     for name, method in noise_reduction_methods:
         mse_values = []
         nrmse_values = []
         psnr_values = []
         ssmi_values = []
 
-        for index, row in tqdm(df_images.iterrows()):
-            noised_img = cv2.imread(row['original_path'], cv2.IMREAD_GRAYSCALE)
-            original_img = cv2.imread(row['noised_path'], cv2.IMREAD_GRAYSCALE)
-            new_img = method(noised_img)
-
-            if new_img.shape == (img_size, img_size):
-                scores = compare_images(original_img, new_img)
-            elif new_img.shape == (1, img_size, img_size, 1):
-                scores = compare_images(
-                    original_img, new_img.reshape(img_size, img_size))
+        for x,y in zip(noised_images, original_images):
+            y_pred = method(x.reshape((100,100))).reshape((img_size, img_size))
+            scores = compare_images(y.reshape((100,100)), y_pred)
 
             mse_values.append(scores['MSE'])
             nrmse_values.append(scores['NRMSE'])
@@ -52,11 +50,13 @@ def compute_noise_reduction_method_statistics(df_images, noise_reduction_methods
 
         df_stats.loc[name] = [statistics.mean(mse_values), statistics.mean(
             nrmse_values), statistics.mean(psnr_values), statistics.mean(ssmi_values)]
-        print(f"Compute finish for {name}")
+
+        if verbose:
+            print(f"Compute finish for {name}")
     return df_stats
 
 
-def compute_noise_type_statistics(df_image, noise_reduction_methods, noise_type, metrics='MSE'):
+def compute_noise_type_statistics(df_image, noise_reduction_methods, noise_type, metrics='MSE', img_size=100):
     """Compute the score for each reduction method for each noise type
 
     Arguments:
@@ -66,6 +66,7 @@ def compute_noise_type_statistics(df_image, noise_reduction_methods, noise_type,
 
     Keyword Arguments:
         metrics {str} -- Score metrics, Allowed : [MSE, NRMSE, PSNR, SSMI] (default: {'MSE'})
+        img_size {int} -- size of the image, assume the image are square (default: {100})
 
     Returns:
         Dataframe -- Dataframe containing the score of each noise reduction method for each noise type
@@ -86,7 +87,12 @@ def compute_noise_type_statistics(df_image, noise_reduction_methods, noise_type,
                 img = cv2.imread(row['path'], cv2.IMREAD_GRAYSCALE)
                 noised_img = noise.add(img)
                 processed_img = method(noised_img)
-                scores = compare_images(img, processed_img)
+
+                if processed_img.shape == (img_size,img_size):
+                    scores = compare_images(img, processed_img)
+                else : 
+                    scors = compare_images(img, processed_img.reshape(img_size, img_size))
+
                 values_list.append(scores[metrics])
 
             noise_values_list.append(statistics.mean(values_list))
