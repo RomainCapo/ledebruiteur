@@ -163,8 +163,8 @@ class GAN():
             gradients_of_generator = gen_tape.gradient(
                 gen_loss, self.generator.trainable_variables)
 
-        gradients_of_discriminator = disc_tape.gradient(
-            disc_loss, self.discriminator.trainable_variables)
+            gradients_of_discriminator = disc_tape.gradient(
+                disc_loss, self.discriminator.trainable_variables)
 
         self.generator_opt.apply_gradients(
             zip(gradients_of_generator, self.generator.trainable_variables))
