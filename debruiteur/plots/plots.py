@@ -83,8 +83,9 @@ def plot_model_loss(history):
     plt.legend(['train', 'val'], loc='upper left')
     plt.show()
 
-def plot_result_comparison(model, gen, reshape=None):
-    """Plots comparison, between original, noised, denoised images
+
+def plot_result_comparison_neural_network(model, gen, reshape=None):
+    """Plots comparison, between original, noised, denoised images for neural network
 
     Arguments:
         model {Model} -- Keras model
@@ -113,5 +114,42 @@ def plot_result_comparison(model, gen, reshape=None):
             ax = plt.subplot(gs[i, j])
             ax.imshow(im, cmap=plt.cm.gray)
             ax.axis('off')
+
+    plt.show()
+
+def plot_result_comparison_standard_method(method, gen, img_size=100):
+    """Plots comparison, between original, noised, denoised images for standard method
+    
+    Arguments:
+        model {Model} -- Keras model
+        gen {Sequence} -- Keras data generator
+    
+    Keyword Arguments:
+        img_size {int} -- Reshape dimension (default: {100})
+    """
+    noised_images, original_images = gen[0]
+
+    rows, cols = 10, 3
+
+    fig = plt.figure(figsize=(10, 30))
+
+    gs = gridspec.GridSpec(rows, cols, width_ratios=[1]*cols, wspace=0.0, hspace=0.0)
+
+    i = 0
+    for x,y in zip(noised_images[:10], original_images[:10]):
+        y_pred = method(x)
+
+        ax = plt.subplot(gs[i, 0])
+        ax.imshow(y.reshape((img_size,img_size)), cmap=plt.cm.gray)
+        ax.axis('off')  
+
+        ax = plt.subplot(gs[i, 1])
+        ax.imshow(x.reshape((img_size,img_size)), cmap=plt.cm.gray)
+        ax.axis('off')  
+
+        ax = plt.subplot(gs[i, 2])
+        ax.imshow(y_pred.reshape((img_size,img_size)), cmap=plt.cm.gray)
+        ax.axis('off')   
+        i+=1
 
     plt.show()

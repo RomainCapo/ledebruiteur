@@ -40,13 +40,13 @@ def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods
         ssmi_values = []
 
         for x,y in zip(noised_images, original_images):
-            y_pred = method(x.reshape((100,100))).reshape((img_size, img_size))
-            scores = compare_images(y.reshape((100,100)), y_pred)
+            y_pred = method(x.reshape((img_size,img_size))).reshape((img_size, img_size))
+            scores = compare_images(y.reshape((img_size,img_size)), y_pred)
 
-            mse_values.append(scores['MSE'])
-            nrmse_values.append(scores['NRMSE'])
-            psnr_values.append(scores['PSNR'])
-            ssmi_values.append(scores['SSIM'])
+            mse_values.append(round(scores['MSE'], 5))
+            nrmse_values.append(round(scores['NRMSE'], 5))
+            psnr_values.append(round(scores['PSNR'], 5))
+            ssmi_values.append(round(scores['SSIM'], 5))
 
         df_stats.loc[name] = [statistics.mean(mse_values), statistics.mean(
             nrmse_values), statistics.mean(psnr_values), statistics.mean(ssmi_values)]
@@ -56,11 +56,11 @@ def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods
     return df_stats
 
 
-def compute_noise_type_statistics(df_image, noise_reduction_methods, noise_type, metrics='MSE', img_size=100):
+def compute_noise_type_statistics(dg_images, noise_reduction_methods, noise_type, metrics='MSE', img_size=100):
     """Compute the score for each reduction method for each noise type
 
     Arguments:
-        df_image {Dataframe} -- Dataframe with one column that contains the original image path 
+        dg_images {DataGenrator} -- DataGenerator that contain the original images and the noised_image
         noise_reduction_methods {list} -- List of tuple, each tuple contain the name of the noise reduction method and the noise reduction function
         noise_type {list} -- List that contain each noise type object
 
@@ -72,8 +72,9 @@ def compute_noise_type_statistics(df_image, noise_reduction_methods, noise_type,
         Dataframe -- Dataframe containing the score of each noise reduction method for each noise type
     """
 
-    df_stats = pd.DataFrame(
-        columns=[type(noise).__name__ for noise in noise_type])
+    df_stats = pd.DataFrame(columns=[type(noise).__name__ for noise in noise_type])
+
+    _, original_images = dg_images[0]
 
     for name, method in noise_reduction_methods:
 
@@ -83,17 +84,13 @@ def compute_noise_type_statistics(df_image, noise_reduction_methods, noise_type,
 
             values_list = []
 
-            for index, row in df_image.iterrows():
-                img = cv2.imread(row['path'], cv2.IMREAD_GRAYSCALE)
-                noised_img = noise.add(img)
-                processed_img = method(noised_img)
+            for img in original_images:
+                noised_img = noise.add(img.reshape((100,100)))
+                processed_img = method(noised_img.reshape((100,100))).reshape((100,100))
 
-                if processed_img.shape == (img_size,img_size):
-                    scores = compare_images(img, processed_img)
-                else : 
-                    scors = compare_images(img, processed_img.reshape(img_size, img_size))
+                scores = compare_images(img.reshape((100,100)), processed_img.reshape((100,100)))
 
-                values_list.append(scores[metrics])
+                values_list.append(round(scores[metrics],5))
 
             noise_values_list.append(statistics.mean(values_list))
 

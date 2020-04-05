@@ -45,7 +45,7 @@ def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_n
     return deconvolved
 
 
-def laplacian_filter(img, gaussian_kernel_size=None):
+def laplacian_filter(img, gaussian_kernel_size=5):
     """Use Laplacian to reduce noise on a image
 
     Arguments:
@@ -58,10 +58,9 @@ def laplacian_filter(img, gaussian_kernel_size=None):
         array -- Filterd image
     """
     if gaussian_kernel_size is not None:
-        img = cv2.GaussianBlur(
-            img, (gaussian_kernel_size, gaussian_kernel_size), 0)
+        img = cv2.GaussianBlur(img, (gaussian_kernel_size, gaussian_kernel_size), 0)
 
-    laplace_img = cv2.Laplacian(img, cv2.CV_64F)
+    laplace_img = cv2.Laplacian(img, cv2.CV_32F)
     return img + laplace_img
 
 
@@ -96,7 +95,7 @@ def mean_filter(img, kernel_size=5):
     Returns:
         array -- Filtered image
     """
-    return cv2.boxFilter(img, cv2.CV_64F, (kernel_size, kernel_size))
+    return cv2.boxFilter(img, cv2.CV_32F, (kernel_size, kernel_size))
 
 
 def median_filter(img, kernel_size=5):
@@ -126,10 +125,10 @@ def conservative_filter(img, filter_size=5):
         array -- Filtered image
     """
     temp = []
-
     indexer = filter_size // 2
     new_image = img.copy()
     nrow, ncol = img.shape
+    
 
     for i in range(nrow):
         for j in range(ncol):
