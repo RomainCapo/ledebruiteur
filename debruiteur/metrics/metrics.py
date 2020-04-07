@@ -3,22 +3,24 @@ import cv2
 import pandas as pd
 from ..plots.plots import *
 
-
-def compare_images(orignal_img, transformed_img):
-    """Compares original image to transformed image
+def compare_images(original_img, transformed_img):
+    """Compares original image to transformed image 
 
     Arguments:
-        orignal_img {Array} -- Numpy like array of image
-        transformed_img {Array} -- Numpy like array of image
+        orignal_img {Array} -- Numpy like array of image [Non-normalize (0-255)]
+        transformed_img {Array} -- Numpy like array of image [Non-normalize (0-255)]
 
     Returns:
         dict -- {"MSE", "NRMSE", "PSNR", "SSIM"}
     """
-    mse = metrics.mean_squared_error(orignal_img * 255, transformed_img * 255)
-    nrmse = metrics.normalized_root_mse(orignal_img, transformed_img)
-    psnr = metrics.peak_signal_noise_ratio(orignal_img / 255, transformed_img / 255)
-    ssim = metrics.structural_similarity(orignal_img, transformed_img, multichannel=True)
+    original_img = np.array(original_img, np.float32)
+    transformed_img = np.array(transformed_img, np.float32)
 
+    mse = metrics.mean_squared_error(original_img, transformed_img)
+    nrmse = metrics.normalized_root_mse(original_img, transformed_img)
+    ssim = metrics.structural_similarity(original_img, transformed_img)
+    psnr = metrics.peak_signal_noise_ratio(original_img, transformed_img, data_range=255)
+    
     return {"MSE": mse, "NRMSE": nrmse, "PSNR": psnr, "SSIM": ssim}
 
 
@@ -46,10 +48,10 @@ def metrics_example(dataframe, noise_class_list):
         images.append(noised_img)
 
         noise_name = noise.__class__.__name__
-        mse = metrics.mean_squared_error(orignal_img * 255, noised_img * 255)
+        mse = metrics.mean_squared_error(orignal_img, noised_img)
         nrmse = metrics.normalized_root_mse(orignal_img, noised_img)
-        psnr = metrics.peak_signal_noise_ratio(orignal_img / 255, noised_img / 255,)
-        ssim = metrics.structural_similarity(orignal_img, noised_img, multichannel=True)
+        psnr = metrics.peak_signal_noise_ratio(orignal_img, noised_img, data_range=255)
+        ssim = metrics.structural_similarity(orignal_img, noised_img)
 
         df_error = df_error.append(
             {"Noise": noise_name, "MSE": mse, "NRMSE": nrmse, "PSNR": psnr, "SSIM": ssim}, ignore_index=True)

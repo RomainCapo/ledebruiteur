@@ -42,6 +42,7 @@ def plot_im_grid_from_df(df, noise=None, rows=5, columns=5, figsize=(8, 8)):
         img = np.array(img, np.float32)
         if noise:
             img = noise.add(img)
+
         fig.add_subplot(rows, columns, i + 1)
         plt.imshow(img, cmap=plt.cm.gray)
         plt.axis('off')
@@ -140,7 +141,8 @@ def plot_result_comparison_standard_method(method, gen, img_size=100):
 
     i = 0
     for x, y in zip(noised_images[:10], original_images[:10]):
-        y_pred = method(x)
+        
+        y_pred = method(x.reshape(100,100) * 255)
 
         ax = plt.subplot(gs[i, 0])
         ax.imshow(y.reshape((img_size, img_size)), cmap=plt.cm.gray)

@@ -18,7 +18,7 @@ def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_n
     """Wiener filter on a image
 
     Arguments:
-        img {array} -- Image array
+        img {array} -- Image array [Non-normalize (0-255)]
 
     Keyword Arguments:
         unsupervised {bool} -- true for supervised algorithm, false otherwise (default: {True})
@@ -27,9 +27,11 @@ def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_n
         psf_numerator {int} -- PSF kernel numerator (default: {25})
 
     Returns:
-        array -- Filtered image
+        array -- Filtered image [Non-normalize (0-255)]
     """
-    img = img_as_float(img)
+    
+    img = np.array(img, np.float32)
+    img = cv2.normalize(img, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F) # Allow to normalize image
 
     psf = np.ones((psf_size, psf_size)) / psf_numerator
     convolved_img = convolve2d(img, psf, 'same')
@@ -42,6 +44,8 @@ def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_n
     else:
         deconvolved = wiener(convolved_img, psf, wiener_balance)
 
+    cv2.absdiff(deconvolved, deconvolved)    
+        
     return deconvolved * 255
 
 
@@ -49,17 +53,17 @@ def laplacian_filter(img, gaussian_kernel_size=5):
     """Use Laplacian to reduce noise on a image
 
     Arguments:
-        img {array} -- Image source array
+        img {array} -- Image source array [Non-normalize (0-255)]
 
     Keyword Arguments:
         gaussian_kernel_size {int} -- size of the gaussian blur kernel, if None the gaussian blur kernel is not applied (default: {None})
 
     Returns:
-        array -- Filterd image
+        array -- Filterd image [Non-normalize (0-255)]
     """
 
-    img *= 255
-
+    img = np.array(img, np.float32)
+    
     if gaussian_kernel_size is not None:
         img = cv2.GaussianBlur(
             img, (gaussian_kernel_size, gaussian_kernel_size), 0)
@@ -72,7 +76,7 @@ def gaussian_weighted_substract_filter(img, gaussian_kernel_size=(0, 0), sigma_x
     """Use gaussian filter to reduce noise on a image
 
     Arguments:
-        img {array} -- Image source array
+        img {array} -- Image source array [Non-normalize (0-255)]
 
     Keyword Arguments:
         gaussian_kernel_size {tuple or int} -- kernel size of the gaussian kernel, if (0,0) the kernel is define with the sigma value (default: {(0,0)})
@@ -82,11 +86,10 @@ def gaussian_weighted_substract_filter(img, gaussian_kernel_size=(0, 0), sigma_x
         weighted_gamma {int} -- Gamma parameter of weighted function (default: {0})
 
     Returns:
-        array -- Filtered image
+        array -- Filtered image [Non-normalize (0-255)]
     """
-
-    img *= 255
-
+    img = np.array(img, np.float32)
+    
     gaussian_img = cv2.GaussianBlur(img, gaussian_kernel_size, sigma_x)
     return cv2.addWeighted(img, weighted_alpha, gaussian_img, weighted_beta, weighted_gamma)
 
@@ -95,14 +98,14 @@ def mean_filter(img, kernel_size=5):
     """Mean filter for noise reduction
 
     Arguments:
-        img {array} -- Image source array
+        img {array} -- Image source array [Non-normalize (0-255)]
         kernel_size {int} -- Kernel size (default: {5})
 
     Returns:
-        array -- Filtered image
+        array -- Filtered image [Non-normalize (0-255)]
     """
 
-    img *= 255
+    img = np.array(img, np.float32)
 
     return cv2.boxFilter(img, cv2.CV_32F, (kernel_size, kernel_size))
 
@@ -111,17 +114,17 @@ def median_filter(img, kernel_size=5):
     """Median filter for noise reduction
 
     Arguments:
-        img {array} -- Image source array
+        img {array} -- Image source array [Non-normalize (0-255)]
 
     Keyword Arguments:
         kernel_size {int} -- Kernel size (default: {5})
 
     Returns:
-        array -- Filtered image
+        array -- Filtered image [Non-normalize (0-255)]
     """
 
-    img *= 255
-
+    img = np.array(img, np.float32)
+    
     return cv2.medianBlur(img, kernel_size)
 
 
@@ -130,14 +133,12 @@ def conservative_filter(img, filter_size=5):
     Code from : https://towardsdatascience.com/image-filters-in-python-26ee938e57d2
 
     Arguments:
-        img {array} -- Image source arary
+        img {array} -- Image source arary [Non-normalize (0-255)]
         filter_size {int} -- Kernel size
 
     Returns:
-        array -- Filtered image
+        array -- Filtered image [Non-normalize (0-255)]
     """
-
-    img *= 255
 
     temp = []
     indexer = filter_size // 2
@@ -163,24 +164,21 @@ def conservative_filter(img, filter_size=5):
                 new_image[i, j] = min_value
 
             temp = []
-    return new_image.copy()
+    return new_image
 
 
 def fft_filter(img):
     """Image noise reduction with Digital Fourier Transform
 
     Arguments:
-        img {array} -- Image source array
-
-    Keyword Arguments:
-        mask {int} -- mask size  (default: {5})
+        img {array} -- Image source array [Non-normalize (0-255)]
 
     Returns:
-        array -- Filtered image
+        array -- Filtered image [Non-normalize (0-255)]
     """
-    img *= 255
-    print(img)
-    dft = cv2.dft(img,flags = cv2.DFT_COMPLEX_OUTPUT)
+
+    img = np.array(img, np.float32)
+    dft = cv2.dft(img, flags=cv2.DFT_COMPLEX_OUTPUT)
 
     dft_shift = np.fft.fftshift(dft)
 
@@ -192,7 +190,7 @@ def fft_filter(img):
 
     fshift = dft_shift*mask
     f_ishift = np.fft.ifftshift(fshift)
-    img_back = cv2.idft(f_ishift)
-    img_back = cv2.magnitude(img_back[:,:,0],img_back[:,:,1])
+    result_img = cv2.idft(f_ishift, flags=cv2.DFT_SCALE)
+    result_img = cv2.magnitude(result_img[:,:,0],result_img[:,:,1])
 
-    return 20*np.log(img_back)
+    return result_img
