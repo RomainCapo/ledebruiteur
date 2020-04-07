@@ -137,8 +137,10 @@ def make_noised_dataframe(dataframe, noise_list, noised_path="noised_images"):
             raise ValueError("noise is not of valid type Noise")
 
         img = cv2.imread(row['path'], cv2.IMREAD_GRAYSCALE)
+        img = np.array(img, np.float32)
 
         noised_img = rand_noise.add(img)
+        noised_img = np.array(noised_img, np.float32)
         noised_class_name = type(rand_noise).__name__
         path = os.path.join(noised_path, f"img{index}_{noised_class_name}.jpg")
 

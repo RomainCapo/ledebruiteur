@@ -1,7 +1,6 @@
 cv2==4.2.0
 numpy==1.17.4
 tensorflow==2.1.0
-keras==2.3.1
 matplotlib==3.1.1
 pandas==0.25.1
 skimage==0.16.2

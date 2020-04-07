@@ -136,7 +136,7 @@ class GAN():
         fig = plt.figure(figsize=(8, 8))
 
         for i in range(predictions.shape[0]):
-            fig.add_subplot(4, 2, i + 1)
+            fig.add_subplot(4, 8, i + 1)
             plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
             plt.axis('off')
 
@@ -147,7 +147,7 @@ class GAN():
         """Perform a train step for a batch
 
         Arguments:
-            noised_images {Array} -- Images with nois
+            noised_images {Array} -- Images with noise
             images {Array} -- Original images
         """
         with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:

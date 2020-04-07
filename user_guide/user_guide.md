@@ -10,7 +10,6 @@
 * cv2 = 4.2.0
 * numpy = 1.17.4
 * tensorflow = 2.1.0
-* keras = 2.3.1
 * matplotlib = 3.1.1
 * pandas = 0.25.1
 * skimage = 0.16.2
@@ -48,7 +47,7 @@ Une fois l'environnement virtuel lancé, veuillez exectuer la commande : ```$ pi
     * **gan.py :** contient les méthodes nécaissaire à la construction du réseau de neurones Generative Adversarial Network.
   * ``noise`` :
     * **noise.py :** contient les différentes classes permettant d'ajouter du bruit sur les images.
-    * **noisereduction.py :** contient les différentes filtres permettant de réduire le bruit sur les images
+    * **filters.py :** contient les différentes filtres permettant de réduire le bruit sur les images
   * ``plots`` :
     * **plots.py :** contient différentes méthodes utilitaires pour l'affichages des images.
   * ``preprocessing`` :

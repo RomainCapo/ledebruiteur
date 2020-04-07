@@ -11,6 +11,7 @@ import pandas as pd
 from tqdm.notebook import tqdm
 import statistics
 from ..metrics.metrics import *
+import matplotlib.pyplot as plt
 
 
 def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods, img_size=100, verbose=True):
@@ -27,8 +28,6 @@ def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods
     Returns:
         Dataframe -- Dataframe containing on each column the score with a metric for each noise reduction method
     """
-
-def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods, img_size=100, verbose=True):
     df_stats = pd.DataFrame(columns=['MSE', 'NRMSE', 'PSNR', 'SSIM'])
 
     noised_images, original_images = dg_images[0]
@@ -39,9 +38,10 @@ def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods
         psnr_values = []
         ssmi_values = []
 
-        for x,y in zip(noised_images, original_images):
-            y_pred = method(x.reshape((img_size,img_size))).reshape((img_size, img_size))
-            scores = compare_images(y.reshape((img_size,img_size)), y_pred)
+        for x, y in zip(noised_images, original_images):
+            y_pred = method(x.reshape((img_size, img_size))
+                            ).reshape((img_size, img_size))
+            scores = compare_images(y.reshape((img_size, img_size)), y_pred)
 
             mse_values.append(round(scores['MSE'], 5))
             nrmse_values.append(round(scores['NRMSE'], 5))
@@ -72,7 +72,8 @@ def compute_noise_type_statistics(dg_images, noise_reduction_methods, noise_type
         Dataframe -- Dataframe containing the score of each noise reduction method for each noise type
     """
 
-    df_stats = pd.DataFrame(columns=[type(noise).__name__ for noise in noise_type])
+    df_stats = pd.DataFrame(
+        columns=[type(noise).__name__ for noise in noise_type])
 
     _, original_images = dg_images[0]
 
@@ -85,12 +86,20 @@ def compute_noise_type_statistics(dg_images, noise_reduction_methods, noise_type
             values_list = []
 
             for img in original_images:
-                noised_img = noise.add(img.reshape((100,100)))
-                processed_img = method(noised_img.reshape((100,100))).reshape((100,100))
+                img = img.reshape((100, 100))
+                noised_img = noise.add(img)
+                processed_img = method(noised_img).reshape((100, 100))
 
-                scores = compare_images(img.reshape((100,100)), processed_img.reshape((100,100)))
+                if name == "Generative Adversarial Network":
+                    plt.imshow(img, cmap='gray')
+                    plt.imshow(noised_img, cmap='gray')
+                    plt.imshow(processed_img, cmap='gray')
+                    plt.show()
+                    return
 
-                values_list.append(round(scores[metrics],5))
+                scores = compare_images(img, processed_img)
+
+                values_list.append(round(scores[metrics], 5))
 
             noise_values_list.append(statistics.mean(values_list))
 

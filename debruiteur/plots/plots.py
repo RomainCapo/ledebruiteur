@@ -39,6 +39,7 @@ def plot_im_grid_from_df(df, noise=None, rows=5, columns=5, figsize=(8, 8)):
     for i, (idx, row) in enumerate(df.sample(sample).iterrows()):
         path = row[0]
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        img = np.array(img, np.float32)
         if noise:
             img = noise.add(img)
         fig.add_subplot(rows, columns, i + 1)
@@ -106,7 +107,7 @@ def plot_result_comparison_neural_network(model, gen, reshape=None):
 
     for i in range(rows):
         for j in range(cols):
-            im = images[j * rows + i]
+            im = images[j * rows + i] * 255
             if reshape:
                 im = im.reshape(reshape)
             else:
@@ -117,13 +118,14 @@ def plot_result_comparison_neural_network(model, gen, reshape=None):
 
     plt.show()
 
+
 def plot_result_comparison_standard_method(method, gen, img_size=100):
     """Plots comparison, between original, noised, denoised images for standard method
-    
+
     Arguments:
         model {Model} -- Keras model
         gen {Sequence} -- Keras data generator
-    
+
     Keyword Arguments:
         img_size {int} -- Reshape dimension (default: {100})
     """
@@ -133,23 +135,24 @@ def plot_result_comparison_standard_method(method, gen, img_size=100):
 
     fig = plt.figure(figsize=(10, 30))
 
-    gs = gridspec.GridSpec(rows, cols, width_ratios=[1]*cols, wspace=0.0, hspace=0.0)
+    gs = gridspec.GridSpec(rows, cols, width_ratios=[
+                           1]*cols, wspace=0.0, hspace=0.0)
 
     i = 0
-    for x,y in zip(noised_images[:10], original_images[:10]):
+    for x, y in zip(noised_images[:10], original_images[:10]):
         y_pred = method(x)
 
         ax = plt.subplot(gs[i, 0])
-        ax.imshow(y.reshape((img_size,img_size)), cmap=plt.cm.gray)
-        ax.axis('off')  
+        ax.imshow(y.reshape((img_size, img_size)), cmap=plt.cm.gray)
+        ax.axis('off')
 
         ax = plt.subplot(gs[i, 1])
-        ax.imshow(x.reshape((img_size,img_size)), cmap=plt.cm.gray)
-        ax.axis('off')  
+        ax.imshow(x.reshape((img_size, img_size)), cmap=plt.cm.gray)
+        ax.axis('off')
 
         ax = plt.subplot(gs[i, 2])
-        ax.imshow(y_pred.reshape((img_size,img_size)), cmap=plt.cm.gray)
-        ax.axis('off')   
-        i+=1
+        ax.imshow(y_pred.reshape((img_size, img_size)), cmap=plt.cm.gray)
+        ax.axis('off')
+        i += 1
 
     plt.show()
