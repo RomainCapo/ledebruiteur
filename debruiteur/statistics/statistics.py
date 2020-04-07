@@ -41,6 +41,7 @@ def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods
         for x, y in zip(noised_images, original_images):
             y_pred = method(x.reshape((img_size, img_size))
                             ).reshape((img_size, img_size))
+                            
             scores = compare_images(y.reshape((img_size, img_size)), y_pred)
 
             mse_values.append(round(scores['MSE'], 5))
