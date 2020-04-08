@@ -7,10 +7,11 @@ Image Processing course
 2019-2020
 """
 
+import os
+
 import cv2
 import gc
 import numpy as np
-import os
 from tensorflow.keras.utils import Sequence
 
 class DataGenerator(Sequence):

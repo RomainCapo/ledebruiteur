@@ -7,9 +7,11 @@ Image Processing course
 2019-2020
 """
 
-from abc import ABC, abstractmethod
+import random
+
 import numpy as np
 import cv2
+from abc import ABC, abstractmethod
 
 
 class Noise(ABC):
@@ -29,7 +31,14 @@ class Noise(ABC):
 
 
 class GaussianNoise(Noise):
-    """Gaussian noise for images"""
+    """Gaussian noise for images
+
+    A gaussian noise is statistical noise having a probability density function equal to that of the gaussian distribution. 
+
+    Principal sources of Gaussian noise in digital images arise during acquisition e.g. sensor noise caused by poor illumination 
+    and/or high temperature, and/or transmission e.g. electronic circuit noise.
+    
+    """
 
     def __init__(self, mean=0, std=10):
         """Init
@@ -56,7 +65,20 @@ class GaussianNoise(Noise):
 
 
 class PoissonNoise(Noise):
-    """Poisson noise for images"""
+    """Poisson noise for images
+    
+    Poisson noise is a type of noise which can be modeled by a Poisson process. In electronics poisson noise originates from the discrete nature of electric charge. 
+    Poisson noise also occurs in photon counting in optical devices, where shot noise is associated with the particle nature of light.
+    """
+
+    def __init__(self, factor=3):
+        """Init
+        
+        Keyword Arguments:
+            factor {int} -- Noise factor (default: {3})
+        """
+
+        self.factor = factor
 
     def add(self, img):
         """Add poisson noise to the image
@@ -67,12 +89,19 @@ class PoissonNoise(Noise):
         Returns:
             Array -- Additive poisson noise
         """
-        poisson = np.random.poisson(img).astype(img.dtype)
-        return cv2.add(img, poisson)
+
+        factor = 1 / self.factor
+        img = np.array(img)
+        img_noise = np.random.poisson(img * factor) / float(factor)
+        np.clip(img_noise, 0, 255, img_noise)
+        return  img_noise
 
 
 class UniformNoise(Noise):
-    """Uniform noise for images"""
+    """Uniform noise for images
+    
+    Uniform noise results from the quantization of the pixels in an image. It has a uniform distribution but can be signal-dependent.
+    """
 
     def __init__(self, amplitude=50):
         """Init
@@ -101,26 +130,25 @@ class UniformNoise(Noise):
 
 
 class SaltPepperNoise(Noise):
-    """Salt and pepper noise for images"""
+    """Salt and pepper noise for images
+    
+    This noise can be caused by sharp and sudden disturbances in the image signal. It presents itself as sparsely occurring white and black pixels.
+    """
 
-    def __init__(self, freq=0.1, s_or_p_prob=0.5):
+    def __init__(self, prob=0.05):
         """Init
 
         Keyword Arguments:
-            freq {float} -- Frequency (default: {0.1})
-            s_and_p_prob {float} -- Salt and pepper probability (default: {0.5})
+            prob {float} -- Salt and pepper probability (default: {0.05})
 
         Raises:
             ValueError: Wrong frequency given
             ValueError: Wrong probability given
         """
-        if freq <= 0 or freq >= 1:
-            raise ValueError("Frequency must be in ]0; 1[")
-        if s_or_p_prob <= 0 or s_or_p_prob >= 1:
+        if prob <= 0 or prob >= 1:
             raise ValueError("Salt or pepper probability must be in ]0; 1[")
 
-        self.freq = freq
-        self.s_or_p_prob = s_or_p_prob
+        self.prob = prob
 
     def add(self, img):
         """Add salt and pepper noise to the image
@@ -131,14 +159,26 @@ class SaltPepperNoise(Noise):
         Returns:
             Array -- Image with salt and pepper
         """
-        w, h = img.shape
-        mask = np.random.rand(w, h) > self.freq
 
-        return np.where(mask, img, 0 if np.random.rand(1) > self.s_or_p_prob else 1)
+        salt_pepper = np.zeros(img.shape, np.float32)
+        thres = 1 - self.prob 
+        for i in range(img.shape[0]):
+            for j in range(img.shape[1]):
+                rdn = random.random()
+                if rdn < self.prob:
+                    salt_pepper[i][j] = 0
+                elif rdn > thres:
+                    salt_pepper[i][j] = 255
+                else:
+                    salt_pepper[i][j] = img[i][j]
+        return salt_pepper
 
 
 class SquareMaskNoise(Noise):
-    """Random rectangular masks"""
+    """Random rectangular masks
+
+    This type of noise may be caused by a sensor failure or a stain on the lens. This type of noise is characterized by missing parts of the image.
+    """
 
     def __init__(self, mask_shape, freq):
         """Init
@@ -192,7 +232,11 @@ class SquareMaskNoise(Noise):
 
 
 class SpeckleNoise(Noise):
-    """Speckle noise"""
+    """Speckle noise
+    
+    Speckle is a form of multiplicative noise, which occurs when a pulse of a sound wave arbitrarily interferes 
+    with small particles or objects on a scale comparable to the wavelength of the sound. 
+    """
 
     def add(self, img):
         """Adds speckle noise

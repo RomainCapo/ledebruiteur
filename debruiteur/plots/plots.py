@@ -9,10 +9,10 @@ Image Processing course
 
 import cv2
 import matplotlib.pyplot as plt
-from matplotlib import gridspec
 import numpy as np
+from matplotlib import gridspec
 
-from ..noise.noise import Noise
+from debruiteur.noise.noise import Noise
 
 
 def plot_im_grid_from_df(df, noise=None, rows=5, columns=5, figsize=(8, 8)):

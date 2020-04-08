@@ -6,12 +6,15 @@ He-Arc, INF3dlm-a
 Image Processing course
 2019-2020
 """
+
 import cv2
 import pandas as pd
-from tqdm.notebook import tqdm
 import statistics
-from ..metrics.metrics import *
 import matplotlib.pyplot as plt
+from tqdm.notebook import tqdm
+
+from debruiteur.metrics.metrics import compare_images
+
 
 
 def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods, img_size=100, verbose=True):

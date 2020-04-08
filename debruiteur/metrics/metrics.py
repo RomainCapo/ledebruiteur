@@ -1,7 +1,18 @@
-from skimage import metrics
+"""
+Le Debruiteur
+Jonas Freiburghaus
+Romain Capocasale
+He-Arc, INF3dlm-a
+Image Processing course
+2019-2020
+"""
+
 import cv2
 import pandas as pd
-from ..plots.plots import *
+import numpy as np
+from skimage import metrics
+
+from debruiteur.plots.plots import plot_im_grid_from_list
 
 def compare_images(original_img, transformed_img):
     """Compares original image to transformed image 

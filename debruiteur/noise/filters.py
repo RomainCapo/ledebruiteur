@@ -7,11 +7,11 @@ Image Processing course
 2019-2020
 """
 
-from skimage.util import img_as_float
-from scipy.signal import convolve2d
-from skimage.restoration import wiener, unsupervised_wiener
 import numpy as np
 import cv2
+from scipy.signal import convolve2d
+from skimage.util import img_as_float
+from skimage.restoration import wiener, unsupervised_wiener
 
 
 def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_numerator=25):

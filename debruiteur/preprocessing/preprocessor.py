@@ -8,15 +8,16 @@ Image Processing course
 """
 
 import os
+import random
+
 import numpy as np
 import cv2
 import pandas as pd
 from PIL import Image
 from tqdm.notebook import tqdm
-import random
 
-from ..utils.utils import init_dir
-from ..noise.noise import *
+from debruiteur.utils.utils import init_dir
+from debruiteur.noise.noise import Noise
 
 
 def make_original_dataframe(base_path="images", sample_folders=20):

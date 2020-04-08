@@ -6,16 +6,17 @@ He-Arc, INF3dlm-a
 Image Processing course
 2019-2020
 """
-from IPython import display
+
 import matplotlib.pyplot as plt
 import tensorflow as tf
+from IPython import display
 from tensorflow.keras.layers import Add, Conv2D, Conv2DTranspose, Dense, Input, Flatten, Lambda
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import Progbar
 from tensorflow.keras.losses import BinaryCrossentropy, MeanSquaredError
 from tensorflow.keras.optimizers import Adam
 
-from .blocks import convolutional_block, residual_block
+from debruiteur.models.blocks import convolutional_block, residual_block
 
 
 class GAN():
