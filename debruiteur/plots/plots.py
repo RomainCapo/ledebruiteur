@@ -86,13 +86,14 @@ def plot_model_loss(history):
     plt.show()
 
 
-def plot_result_comparison_neural_network(model, gen, reshape=None):
+def plot_result_comparison_neural_network(model, gen, reshape=None, filter_pipeline=[]):
     """Plots comparison, between original, noised, denoised images for neural network
 
     Arguments:
         model {Model} -- Keras model
         gen {Sequence} -- Keras data generator
         reshape {tuple} -- Reshape dimension (default: {None})
+        filter_pipeline {array} -- Array of filters method, called in order (default: {[]})
     """
     x, y = gen[0]
     y_pred = model.predict(x)
@@ -109,6 +110,11 @@ def plot_result_comparison_neural_network(model, gen, reshape=None):
     for i in range(rows):
         for j in range(cols):
             im = images[j * rows + i] * 255
+
+            if len(filter_pipeline) > 0:
+                for f in filter_pipeline:
+                    im = f(im)
+
             if reshape:
                 im = im.reshape(reshape)
             else:
@@ -141,8 +147,8 @@ def plot_result_comparison_standard_method(method, gen, img_size=100):
 
     i = 0
     for x, y in zip(noised_images[:10], original_images[:10]):
-        
-        y_pred = method(x.reshape(100,100) * 255)
+
+        y_pred = method(x.reshape(100, 100) * 255)
 
         ax = plt.subplot(gs[i, 0])
         ax.imshow(y.reshape((img_size, img_size)), cmap=plt.cm.gray)
