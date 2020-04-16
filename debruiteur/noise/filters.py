@@ -17,6 +17,9 @@ from skimage.restoration import wiener, unsupervised_wiener
 def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_numerator=25):
     """Wiener filter on a image
 
+    This filter is used to estimate the desired value of a noisy signal. 
+    The Wiener filter minimizes the root mean square error between the estimated random process and the desired process.
+
     Arguments:
         img {array} -- Image array [Non-normalize (0-255)]
 
@@ -52,6 +55,9 @@ def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_n
 def laplacian_filter(img, gaussian_kernel_size=5):
     """Use Laplacian to reduce noise on a image
 
+    This filter calculates the Laplace transform on an image and adds it to the original image. 
+    Gaussian noise can be added to the image to improve the result. 
+
     Arguments:
         img {array} -- Image source array [Non-normalize (0-255)]
 
@@ -75,6 +81,8 @@ def laplacian_filter(img, gaussian_kernel_size=5):
 def gaussian_weighted_substract_filter(img, gaussian_kernel_size=(0, 0), sigma_x=3, weighted_alpha=1.5, weighted_beta=-0.5, weighted_gamma=0):
     """Use gaussian filter to reduce noise on a image
 
+    This filter calculates a Gaussian blur on the image and adds it with certain weightings configurable with the parameters of the function.
+
     Arguments:
         img {array} -- Image source array [Non-normalize (0-255)]
 
@@ -97,6 +105,8 @@ def gaussian_weighted_substract_filter(img, gaussian_kernel_size=(0, 0), sigma_x
 def mean_filter(img, kernel_size=5):
     """Mean filter for noise reduction
 
+    The averaging filter replaces each pixel with the value average of its neighbours according to a given kernel. 
+
     Arguments:
         img {array} -- Image source array [Non-normalize (0-255)]
         kernel_size {int} -- Kernel size (default: {5})
@@ -112,6 +122,8 @@ def mean_filter(img, kernel_size=5):
 
 def median_filter(img, kernel_size=5):
     """Median filter for noise reduction
+
+    The median filter replaces each pixel with the median value of its neighbors according to a given kernel. 
 
     Arguments:
         img {array} -- Image source array [Non-normalize (0-255)]
@@ -131,6 +143,10 @@ def median_filter(img, kernel_size=5):
 def conservative_filter(img, filter_size=5):
     """Conservative filter for image noise reduction
     Code from : https://towardsdatascience.com/image-filters-in-python-26ee938e57d2
+
+    The conservative filter for a given kernel retains the current pixel if it is between the min and max of neighboring pixels. 
+    If the value of the pixel is below the min of the neighboring pixels have taken the min. 
+    If the value is above the neighbouring max pixel, the max is taken.
 
     Arguments:
         img {array} -- Image source arary [Non-normalize (0-255)]
@@ -169,6 +185,9 @@ def conservative_filter(img, filter_size=5):
 
 def fft_filter(img):
     """Image noise reduction with Digital Fourier Transform
+
+    This filter performs a Fourier transform on the image. 
+    Afterwards, a mask is applied on the image that has undergone the Fourier transform and the image is retransformed with an inverse Fourier transform.
 
     Arguments:
         img {array} -- Image source array [Non-normalize (0-255)]

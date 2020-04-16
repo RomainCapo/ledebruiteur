@@ -38,7 +38,7 @@ Une fois l'environnement virtuel lancé, veuillez exectuer la commande : ```$ pi
 ## Arborescence
 * ``debruiteur`` : le dossier contient la librairie créé pour le projet
   * ``generator`` :
-    * **datagenerator.py :** contient une classe fournissant les fonctionnalités équivalente à un genrateur python mais pour les images. Cette classe est utile pour fournir des images lors de l'entrainements des réseaux de neurones.  
+    * **datagenerator.py :** contient une classe fournissant les fonctionnalités équivalente à un genrateur python mais pour les images. Cette classe est utile pour fournir des images lors de l'entrainements des réseaux de neurones et ne pas dépasser la taille de la mémoire disponible.  
   * ``metrics`` :
     * **metrics.py :** contient des méthodes permettant de comparer des images entres elles selon les différentes métriques défini pour le projet.
   * ``models`` :
@@ -47,7 +47,7 @@ Une fois l'environnement virtuel lancé, veuillez exectuer la commande : ```$ pi
     * **gan.py :** contient les méthodes nécaissaire à la construction du réseau de neurones Generative Adversarial Network.
   * ``noise`` :
     * **noise.py :** contient les différentes classes permettant d'ajouter du bruit sur les images.
-    * **filters.py :** contient les différentes filtres permettant de réduire le bruit sur les images
+    * **filters.py :** contient les différentes filtres permettant de réduire le bruit sur les images.
   * ``plots`` :
     * **plots.py :** contient différentes méthodes utilitaires pour l'affichages des images.
   * ``preprocessing`` :
@@ -61,8 +61,11 @@ Une fois l'environnement virtuel lancé, veuillez exectuer la commande : ```$ pi
 * ``noised_images`` : contient les images redimmensionné (ce dossier se crée après avoir exectué la cellule en question)
 * ``saved_models`` : contient les modèles entrainés
 * ``user_guide`` : contient le guide utilisateur
-* ``LeDebruiteur.ipynb`` : notebook jupyter pour l'entrainement des modèles. Il n'est pas nécaissaire d'entrainer les modèles à chaque fois. Une fois qu'un modèle est entrainé, il est enregistré dans ``saved_models`` et peut être rechargé à tout moment.
-* ``EDA.ipynb`` : notebook jupyter mettant en oeuvre toutes les méthodes de la librairie créé pour ce projet.
+* ``NoiseType.ipynb`` : notebook jupyter qui présente les différents types de bruits appliqués aux images utilisé pour le bruit. Le notebook contient également des explications sur l'origine de ces types de bruits.
+* ``Filters.ipynb`` : notebook jupyter qui présente les différentes filtres appliqueé sur des images bruités.
+* ``NeuralNetworkTraining.ipynb`` : notebook jupyter pour l'entrainement des modèles. Il n'est pas nécaissaire d'entrainer les modèles à chaque fois. Une fois qu'un modèle est entrainé, il est enregistré dans ``saved_models`` et peut être rechargé à tout moment.
+* ``NoiseReductionNeuralNetwork.ipynb`` : notebook jupyter qui présente les résultats des réseaux de neuronnes préalablement entrainés sur différentes images bruités.
+* ``Statistics.ipynb`` : notebook jupyter qui compare les différentes techniques (filtres et réseaux de neuronnes) utilisé pour ce projet sur les différents types de bruits. Le notebook contient également différentes statistiques sur ces méthodes ainsi que la conclusion de notre projet.
 
 ## Éxecution des notebooks
 Les notebook peuvent être exectué avec la commande : ```$ jupyter notebook```. Une fois le notebook en question choisi, il faut se rendre sous l'onglet ``Noyau`` -> ``Changer de noyau`` et verifier que l'environnement créé préceddement est bien activé pour le notebook.
