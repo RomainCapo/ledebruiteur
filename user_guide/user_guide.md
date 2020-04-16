@@ -66,6 +66,25 @@ Une fois l'environnement virtuel lancé, veuillez exectuer la commande : ```$ pi
 * ``NeuralNetworkTraining.ipynb`` : notebook jupyter pour l'entrainement des modèles. Il n'est pas nécaissaire d'entrainer les modèles à chaque fois. Une fois qu'un modèle est entrainé, il est enregistré dans ``saved_models`` et peut être rechargé à tout moment.
 * ``NoiseReductionNeuralNetwork.ipynb`` : notebook jupyter qui présente les résultats des réseaux de neuronnes préalablement entrainés sur différentes images bruités.
 * ``Statistics.ipynb`` : notebook jupyter qui compare les différentes techniques (filtres et réseaux de neuronnes) utilisé pour ce projet sur les différents types de bruits. Le notebook contient également différentes statistiques sur ces méthodes ainsi que la conclusion de notre projet.
+* ``denoise.py`` : Script utilitaire pour débruiter une image.
 
 ## Éxecution des notebooks
 Les notebook peuvent être exectué avec la commande : ```$ jupyter notebook```. Une fois le notebook en question choisi, il faut se rendre sous l'onglet ``Noyau`` -> ``Changer de noyau`` et verifier que l'environnement créé préceddement est bien activé pour le notebook.
+
+## Exéctuion du script utilitaire
+
+```py
+python denoise.py -i <input_img_path> -o <output_img_path> -m <model name> -p <post processing filter>
+```
+
+Exemple :
+
+```py
+python denoise.py -i test.png -o denoised.png -m 0 -p 2
+```
+
+Pour obtenir plus d'information sur les différentes options :
+
+```py
+python denoise.py -h
+```
