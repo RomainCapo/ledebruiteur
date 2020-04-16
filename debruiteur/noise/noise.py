@@ -37,7 +37,7 @@ class GaussianNoise(Noise):
 
     Principal sources of Gaussian noise in digital images arise during acquisition e.g. sensor noise caused by poor illumination 
     and/or high temperature, and/or transmission e.g. electronic circuit noise.
-    
+
     """
 
     def __init__(self, mean=0, std=10):
@@ -66,14 +66,14 @@ class GaussianNoise(Noise):
 
 class PoissonNoise(Noise):
     """Poisson noise for images
-    
+
     Poisson noise is a type of noise which can be modeled by a Poisson process. In electronics poisson noise originates from the discrete nature of electric charge. 
     Poisson noise also occurs in photon counting in optical devices, where shot noise is associated with the particle nature of light.
     """
 
     def __init__(self, factor=3):
         """Init
-        
+
         Keyword Arguments:
             factor {int} -- Noise factor (default: {3})
         """
@@ -94,12 +94,12 @@ class PoissonNoise(Noise):
         img = np.array(img)
         img_noise = np.random.poisson(img * factor) / float(factor)
         np.clip(img_noise, 0, 255, img_noise)
-        return  img_noise
+        return img_noise
 
 
 class UniformNoise(Noise):
     """Uniform noise for images
-    
+
     Uniform noise results from the quantization of the pixels in an image. It has a uniform distribution but can be signal-dependent.
     """
 
@@ -131,7 +131,7 @@ class UniformNoise(Noise):
 
 class SaltPepperNoise(Noise):
     """Salt and pepper noise for images
-    
+
     This noise can be caused by sharp and sudden disturbances in the image signal. It presents itself as sparsely occurring white and black pixels.
     """
 
@@ -161,7 +161,7 @@ class SaltPepperNoise(Noise):
         """
 
         salt_pepper = np.zeros(img.shape, np.float32)
-        thres = 1 - self.prob 
+        thres = 1 - self.prob
         for i in range(img.shape[0]):
             for j in range(img.shape[1]):
                 rdn = random.random()
@@ -233,7 +233,7 @@ class SquareMaskNoise(Noise):
 
 class SpeckleNoise(Noise):
     """Speckle noise
-    
+
     Speckle is a form of multiplicative noise, which occurs when a pulse of a sound wave arbitrarily interferes 
     with small particles or objects on a scale comparable to the wavelength of the sound. 
     """

@@ -76,4 +76,4 @@ def load_model(path, name):
     Returns:
         Model -- Keras model
     """
-    return k_load_model(os.path.join(path, name))
+    return k_load_model(os.path.join(path, name), compile=False)

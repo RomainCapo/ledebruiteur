@@ -29,9 +29,10 @@ def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_n
     Returns:
         array -- Filtered image [Non-normalize (0-255)]
     """
-    
+
     img = np.array(img, np.float32)
-    img = cv2.normalize(img, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F) # Allow to normalize image
+    img = cv2.normalize(img, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX,
+                        dtype=cv2.CV_32F)  # Allow to normalize image
 
     psf = np.ones((psf_size, psf_size)) / psf_numerator
     convolved_img = convolve2d(img, psf, 'same')
@@ -44,8 +45,8 @@ def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_n
     else:
         deconvolved = wiener(convolved_img, psf, wiener_balance)
 
-    cv2.absdiff(deconvolved, deconvolved)    
-        
+    cv2.absdiff(deconvolved, deconvolved)
+
     return deconvolved * 255
 
 
@@ -63,7 +64,7 @@ def laplacian_filter(img, gaussian_kernel_size=5):
     """
 
     img = np.array(img, np.float32)
-    
+
     if gaussian_kernel_size is not None:
         img = cv2.GaussianBlur(
             img, (gaussian_kernel_size, gaussian_kernel_size), 0)
@@ -89,7 +90,7 @@ def gaussian_weighted_substract_filter(img, gaussian_kernel_size=(0, 0), sigma_x
         array -- Filtered image [Non-normalize (0-255)]
     """
     img = np.array(img, np.float32)
-    
+
     gaussian_img = cv2.GaussianBlur(img, gaussian_kernel_size, sigma_x)
     return cv2.addWeighted(img, weighted_alpha, gaussian_img, weighted_beta, weighted_gamma)
 
@@ -124,7 +125,7 @@ def median_filter(img, kernel_size=5):
     """
 
     img = np.array(img, np.float32)
-    
+
     return cv2.medianBlur(img, kernel_size)
 
 
@@ -183,14 +184,14 @@ def fft_filter(img):
     dft_shift = np.fft.fftshift(dft)
 
     rows, cols = img.shape
-    crow,ccol = rows//2 , cols//2
+    crow, ccol = rows//2, cols//2
 
-    mask = np.zeros((rows,cols,2),np.uint8)
+    mask = np.zeros((rows, cols, 2), np.uint8)
     mask[crow-30:crow+30, ccol-30:ccol+30] = 1
 
     fshift = dft_shift*mask
     f_ishift = np.fft.ifftshift(fshift)
     result_img = cv2.idft(f_ishift, flags=cv2.DFT_SCALE)
-    result_img = cv2.magnitude(result_img[:,:,0],result_img[:,:,1])
+    result_img = cv2.magnitude(result_img[:, :, 0], result_img[:, :, 1])
 
     return result_img
