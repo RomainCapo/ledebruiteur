@@ -5,6 +5,9 @@
 * Image Processing course
 * 2019-2020
 
+Nous avons respecté au mieux la norme **PEP8** en ce qui concerne la nomenclature, les importations et la documentation.  
+La conclusion se trouve dans le notebook 'Statistics.ipynb'.
+
 ## Liste des packages utilisé
 * python = 3.7.4
 * cv2 = 4.2.0
@@ -69,6 +72,7 @@ Une fois l'environnement virtuel lancé, veuillez exectuer la commande : ```$ pi
 * ``denoise.py`` : Script utilitaire pour débruiter une image.
 
 ## Éxecution des notebooks
+
 Les notebook peuvent être exectué avec la commande : ```$ jupyter notebook```. Une fois le notebook en question choisi, il faut se rendre sous l'onglet ``Noyau`` -> ``Changer de noyau`` et verifier que l'environnement créé préceddement est bien activé pour le notebook.
 
 ## Exéctuion du script utilitaire
