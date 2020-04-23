@@ -76,7 +76,7 @@ Une fois l'environnement virtuel lancé, veuillez executer la commande : ```$ pi
 * ``Statistics.ipynb`` : notebook jupyter qui compare les différentes techniques (filtres et réseaux de neuronnes) utilisé pour ce projet sur les différents types de bruits. Le notebook contient également différentes statistiques sur ces méthodes ainsi que la conclusion de notre projet.
 * ``denoise.py`` : Script utilitaire pour débruiter une image.
 
-## Éxecution des notebooks
+## Exécution des notebooks
 
 Les notebook peuvent être exectués avec la commande : ```$ jupyter notebook```. Une fois le notebook en question choisi, il faut se rendre sous l'onglet ``Noyau`` -> ``Changer de noyau`` et verifier que l'environnement créé précédemment est bien activé pour le notebook.
 
