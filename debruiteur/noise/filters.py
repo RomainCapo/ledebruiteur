@@ -268,9 +268,9 @@ def median_blur(img, k_size=5):
         img {Array} -- Numpy like array of image
 
     Keyword Arguments:
-        ksize {int} -- size of the blur
+        k_size {int} -- size of the blur
 
     Returns:
         Array -- Gaussian blur noise
     """
-    return cv2.medianBlur(img, ksize)
+    return cv2.medianBlur(img, k_size)

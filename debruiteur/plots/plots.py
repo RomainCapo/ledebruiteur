@@ -125,7 +125,7 @@ def plot_result_comparison_neural_network(model, gen, reshape=None, filter_pipel
     plt.show()
 
 
-def plot_result_comparison_standard_method(method, gen, img_size=100):
+def plot_result_comparison_standard_method_from_datagenerator(method, gen, img_size=100):
     """Plots comparison, between original, noised, denoised images for standard method
 
     Arguments:
@@ -183,7 +183,43 @@ def plot_result_comparaison_standart_method_for_each_noise_type(method, img_path
     i = 0
     for noised_img in noised_img_list:
 
-        y_pred = method(noised_img.reshape(100, 100) * 255)
+        y_pred = method(noised_img.reshape(100, 100))
+
+        ax = plt.subplot(gs[i, 0])
+        ax.imshow(img.reshape((img_size, img_size)), cmap=plt.cm.gray)
+        ax.axis('off')
+
+        ax = plt.subplot(gs[i, 1])
+        ax.imshow(noised_img.reshape((img_size, img_size)), cmap=plt.cm.gray)
+        ax.axis('off')
+
+        ax = plt.subplot(gs[i, 2])
+        ax.imshow(y_pred.reshape((img_size, img_size)), cmap=plt.cm.gray)
+        ax.axis('off')
+        i += 1
+
+    plt.show()
+
+def plot_result_comparaison_standart_method_for_each_blur_type(method, img_path, blur_type, img_size=100):
+
+    img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+
+    noised_img_list = []
+
+    for blur in blur_type:    
+        noised_img_list.append(blur(img))
+        
+    rows, cols = len(noised_img_list), 3
+
+    fig = plt.figure(figsize=(10, 10))
+    
+    gs = gridspec.GridSpec(rows, cols, width_ratios=[
+                           1]*cols, wspace=0.0, hspace=0.0)
+    
+    i = 0
+    for noised_img in noised_img_list:
+
+        y_pred = method(noised_img.reshape(100, 100))
 
         ax = plt.subplot(gs[i, 0])
         ax.imshow(img.reshape((img_size, img_size)), cmap=plt.cm.gray)
