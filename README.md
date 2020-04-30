@@ -10,12 +10,14 @@
 * Sharpness and edge
   * Wiener
   * Laplacian
+  * High pass using FFT
   * Gaussian weighted
 * Noise
   * Mean
   * Median
-  * FFT
+  * Low pass using FFT
   * Conservative
+  * Gaussian
 
 ## Inspired from :
 
