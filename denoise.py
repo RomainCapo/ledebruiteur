@@ -17,12 +17,8 @@ MODELS = {
 }
 
 POST_PROCESSING = {
-    'CONSERVATIVE_FILTER': conservative_filter,
-    'FAST_FOURIER_TRANSFORM_FILTER': fft_filter,
     'GAUSSIAN_SUBSTRACT': gaussian_weighted_substract_filter,
     'LAPLACIAN_FILTER': laplacian_filter,
-    'MEAN_FILTER': mean_filter,
-    'MEDIAN_FILTER': mean_filter,
     'NO_FILTER': None,
     'WIENER_FILTER': wiener_filter
 }
@@ -132,14 +128,10 @@ def parse_cli_args():
         choices=range(len(POST_PROCESSING)),
         default=6,
         help="""Post processing algorithm (filter) : \n
-                [0] -> Conservative \n
-                [1] -> Fast Fourier transform \n
-                [2] -> Gaussian weighted substract \n,
-                [3] -> Laplacian \n,
-                [4] -> Mean \n,
-                [5] -> Median \n,
-                [6] -> No filter \n
-                [7] -> Wiener \n,
+                [0] -> Gaussian weighted substract \n,
+                [1] -> Laplacian \n,
+                [2] -> No filter \n
+                [3] -> Wiener \n,
                 """
     )
 

@@ -79,6 +79,10 @@ def laplacian_filter(img, gaussian_kernel_size=5):
     return img + laplace_img
 
 
+def gaussian_filter(img, gaussian_kernel_size=(3, 3), sigma_x=3):
+    return cv2.GaussianBlur(img, gaussian_kernel_size, sigma_x)
+
+
 def gaussian_weighted_substract_filter(img, gaussian_kernel_size=(0, 0), sigma_x=3, weighted_alpha=1.5, weighted_beta=-0.5, weighted_gamma=0):
     """Use gaussian filter to reduce noise on a image
 
