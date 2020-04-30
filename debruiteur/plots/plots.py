@@ -129,7 +129,7 @@ def plot_result_comparison_standard_method_from_datagenerator(method, gen, img_s
     """Plots comparison, between original, noised, denoised images for standard method
 
     Arguments:
-        model {Model} -- Keras model
+        method {function} -- Noise reduction method
         gen {Sequence} -- Keras data generator
 
     Keyword Arguments:
@@ -165,7 +165,16 @@ def plot_result_comparison_standard_method_from_datagenerator(method, gen, img_s
     plt.show()
 
 def plot_result_comparaison_standart_method_for_each_noise_type(method, img_path, noise_type, img_size=100):
+    """Plots comparison, between original, noised, denoised images for standard method
 
+    Arguments:
+        method {function} -- Noise reduction method
+        img_path {string} -- Example image path
+        noise_type {list} -- List of all noise type
+
+    Keyword Arguments:
+        img_size {int} -- Image size (default: {100})
+    """
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     noised_img_list = []
@@ -201,7 +210,16 @@ def plot_result_comparaison_standart_method_for_each_noise_type(method, img_path
     plt.show()
 
 def plot_result_comparaison_standart_method_for_each_blur_type(method, img_path, blur_type, img_size=100):
+    """Plots comparison, between original, blured, sharpen images for standard method
 
+    Arguments:
+        method {function} -- Sharpen method
+        img_path {string} -- Example image path
+        blur_type {list} -- List of all blur type
+
+    Keyword Arguments:
+        img_size {int} -- Image size (default: {100})
+    """
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     noised_img_list = []
