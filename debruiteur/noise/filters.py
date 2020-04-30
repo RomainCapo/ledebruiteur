@@ -232,3 +232,45 @@ def low_pass_filter(img):
     result_img = cv2.magnitude(result_img[:, :, 0], result_img[:, :, 1])
 
     return result_img
+
+def gaussian_blur(img, kernel=(5,5)):
+    """Adds gaussian blur noise
+
+    Arguments:
+        img {Array} -- Numpy like array of image
+
+    Keyword Arguments:
+        kernel {tuple} -- kernel shape of the blur
+
+    Returns:
+        Array -- Gaussian blur noise
+    """
+    return cv2.GaussianBlur(img, kernel, 0)
+
+def averaging_blur(img, kernel=(5,5)):
+    """Adds averaging blur noise
+
+    Arguments:
+        img {Array} -- Numpy like array of image
+
+    Keyword Arguments:
+        kernel {tuple} -- kernel shape of the blur
+
+    Returns:
+        Array -- Gaussian blur noise
+    """
+    return cv2.blur(img, kernel)
+
+def median_blur(img, k_size=5):
+    """Adds median blur noise
+
+    Arguments:
+        img {Array} -- Numpy like array of image
+
+    Keyword Arguments:
+        ksize {int} -- size of the blur
+
+    Returns:
+        Array -- Gaussian blur noise
+    """
+    return cv2.medianBlur(img, ksize)
