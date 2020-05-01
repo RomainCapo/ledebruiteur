@@ -20,7 +20,8 @@ POST_PROCESSING = {
     'GAUSSIAN_SUBSTRACT': gaussian_weighted_substract_filter,
     'LAPLACIAN_FILTER': laplacian_filter,
     'NO_FILTER': None,
-    'WIENER_FILTER': wiener_filter
+    'WIENER_FILTER': wiener_filter,
+	'HIGH_PASS_FILTER': high_pass_filter,
 }
 
 
@@ -132,6 +133,7 @@ def parse_cli_args():
                 [1] -> Laplacian \n,
                 [2] -> No filter \n
                 [3] -> Wiener \n,
+				[4] -> High pass filter \n
                 """
     )
 

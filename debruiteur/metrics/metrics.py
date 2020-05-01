@@ -31,7 +31,7 @@ def compare_images(original_img, transformed_img):
     nrmse = metrics.normalized_root_mse(original_img, transformed_img)
     ssim = metrics.structural_similarity(original_img, transformed_img)
     psnr = metrics.peak_signal_noise_ratio(original_img, transformed_img, data_range=255)
-    
+
     return {"MSE": mse, "NRMSE": nrmse, "PSNR": psnr, "SSIM": ssim}
 
 
