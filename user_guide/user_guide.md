@@ -1,36 +1,48 @@
 # Le Debruiteur - Guide utilisateur
+
 * Jonas Freiburghaus
 * Romain Capocasale
 * He-Arc, INF3dlm-a
 * Image Processing course
 * 2019-2020
 
-Nous avons respecté au mieux la norme **PEP8** en ce qui concerne la nomenclature, les importations et la documentation.  
+Nous avons respecté au mieux la norme **PEP8** en ce qui concerne la nomenclature et la documentation.  
 La conclusion se trouve dans le notebook 'Statistics.ipynb'.
 
 ## Liste des packages utilisé
-* python = 3.7.4
-* cv2 = 4.2.0
-* numpy = 1.17.4
-* tensorflow = 2.1.0
-* matplotlib = 3.1.1
-* pandas = 0.25.1
-* skimage = 0.16.2
-* PIL = 6.2.0
-* tqdm = 4.36.1
-* jupyter-notebook = 6.0.1
+
+* opencv-python
+* numpy
+* tensorflow
+* matplotlib
+* pandas
+* scikit-image
+* Pillow
+* tqdm
 
 ## Installation
 
+### Via docker
+
+Dans le dossier du projet lancer la commande :
+
+```
+docker-compose up -d
+```
+
+Puis ouvrir un navigateur à l'adresse : `localhost:8888`
+
+### Via l'ordinateur courant
+
 Les différents packages nécaissaires seront installés dans un environnement virtuel. Tout d'abord, il faut avoir ``Python`` installé sur sa machine.
 
-### PIP
+#### PIP
 
 En suite, il faut s'assurer d'avoir PIP installé avec la commande : ```$ pip --version```.
 
 Si PIP n'est pas installé, il peut être installé via le script ``get-pip.py`` présent dans le répertoire ``user_guide`` avec la commande ```$ python get-pip.py``` ou via le [site web officiel de PIP](https://pip.pypa.io/en/stable/installing/).
 
-### Virtualenv
+#### Virtualenv
 
 Une fois PIP installé, veuillez exectuer la commande ```$ pip install virtualenv``` pour installer virtualenv.
 
@@ -38,9 +50,17 @@ Par la suite, un environnement virtual peut être créé avec la commande : ```$
 
 Une fois l'environnement créé, l'environnement virtuel peut être lancé via la commande : ```$ . [env_name]/Script/activate``` ou si cela ne fonctionne pas avec : ```$ source [env_name]/Scripts/activate```.
 
-### Requierments
+#### Requierments
 
 Une fois l'environnement virtuel lancé, veuillez executer la commande : ```$ pip install -r requierments.txt``` pour installer les packages nécaissaires au projet. Ce fichier est présent dans le dossier ``user_guide``.
+
+#### Jupyter
+
+Et finalement : 
+
+```
+pip install jupyterlab
+```
 
 ## Arborescence
 
@@ -75,6 +95,8 @@ Une fois l'environnement virtuel lancé, veuillez executer la commande : ```$ pi
 * ``NoiseReductionNeuralNetwork.ipynb`` : notebook jupyter qui présente les résultats des réseaux de neuronnes préalablement entrainés sur différentes images bruitées.
 * ``Statistics.ipynb`` : notebook jupyter qui compare les différentes techniques (filtres et réseaux de neuronnes) utilisé pour ce projet sur les différents types de bruits. Le notebook contient également différentes statistiques sur ces méthodes ainsi que la conclusion de notre projet.
 * ``denoise.py`` : Script utilitaire pour débruiter une image.
+* ``Dockerfile`` : Image docker avec les packages nécessaires pour lancer le projet
+* ``docker-compose.yml`` : Facilite la mise en place de l'image docker
 
 ## Exécution des notebooks
 
