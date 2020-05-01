@@ -80,11 +80,23 @@ def laplacian_filter(img, gaussian_kernel_size=5):
 
 
 def gaussian_filter(img, gaussian_kernel_size=(3, 3), sigma_x=3):
+    """Use gaussian filter to reduce noise on an image
+
+    Arguments:
+        img {array} -- Image source array
+
+    Keyword Arguments:
+        gaussian_kernel_size {tuple} -- Gaussian kernel size (default: {(3, 3)})
+        sigma_x {int} -- Sigma parameter (default: {3})
+
+    Returns:
+        array -- Gaussian filtered image
+    """
     return cv2.GaussianBlur(img, gaussian_kernel_size, sigma_x)
 
 
 def gaussian_weighted_substract_filter(img, gaussian_kernel_size=(0, 0), sigma_x=3, weighted_alpha=1.5, weighted_beta=-0.5, weighted_gamma=0):
-    """Use gaussian filter to reduce noise on a image
+    """Use gaussian filter to reduce noise on an image
 
     This filter calculates a Gaussian blur on the image and adds it with certain weightings configurable with the parameters of the function.
 
