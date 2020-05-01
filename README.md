@@ -1,3 +1,5 @@
+![CI](https://github.com/JonasFreibur/ledebruiteur/workflows/Debruiteur%20CI/badge.svg)
+
 # LeDebruiteur
 
 Computer vision project done during the last Bachelor semester.  
