@@ -21,13 +21,18 @@ class TestDenoiseMethods(unittest.TestCase):
 		for filter_name, filter_opt in self.FILTERS.items():
 			file_out = os.path.join(self.BASE_PATH, filter_name + ".jpg")
 			sp = subprocess.Popen(['python', 'denoise.py', "-i", FILE_IN, "-o", file_out , "-p", f'{filter_opt}'], 
-								  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			streamdata = sp.communicate()[0]
+								  stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+				
+			out, err = sp.communicate()
+			print(f'{out}')
+			print(f'{err}')
+			
 			return_codes.append(sp.returncode)
 
 		expected_status_code = [self.SUCCESS_RET_CODE for i in range(0, len(self.FILTERS.keys()))]
-		self.assertEqual(return_codes, [self.SUCCESS_RET_CODE for i in range(0, len(self.FILTERS.keys()))])
-		
+		self.assertEqual(return_codes, expected_status_code)
+	
+	
 	def tearDown(self):
 		output_files = list(map(lambda name: os.path.join(self.BASE_PATH, name + ".jpg"), self.FILTERS.keys()))
 		for output_file in output_files:
