@@ -1,4 +1,4 @@
-name: Debruiteur denoise script
+name: Debruiteur CI
 
 on:
   push:
