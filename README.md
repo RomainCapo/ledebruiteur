@@ -1,5 +1,9 @@
 # LeDebruiteur
 
+Computer vision project done during the last Bachelor semester.  
+The aim is to show the use of a few filtering methods to reduce different kind of noises.  
+And compare deep learning models with more conventional filters.
+
 ## Authors :
 
 * Romain Capocasale @RomainCapo
