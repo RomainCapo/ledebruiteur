@@ -127,7 +127,7 @@ def parse_cli_args():
         required=False,
         type=int,
         choices=range(len(POST_PROCESSING)),
-        default=6,
+        default=2,
         help="""Post processing algorithm (filter) : \n
                 [0] -> Gaussian weighted substract \n,
                 [1] -> Laplacian \n,

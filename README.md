@@ -26,3 +26,13 @@ And compare deep learning models with more conventional filters.
 ## Inspired from :
 
 * [Image De-raining Using a Conditional Generative Adversarial Network](https://arxiv.org/pdf/1701.05957.pdf)
+
+## Credits :
+
+To train the models we used the Calthech101 Dataset.
+
+```
+L. Fei-Fei, R. Fergus and P. Perona. One-Shot learning of object
+categories. IEEE Trans. Pattern Recognition and Machine Intelligence. In
+press
+```
