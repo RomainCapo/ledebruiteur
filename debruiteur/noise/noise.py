@@ -238,6 +238,14 @@ class SpeckleNoise(Noise):
     with small particles or objects on a scale comparable to the wavelength of the sound. 
     """
 
+    def __init__(self, intensity=0.2):
+        """Init
+
+        Arguments:
+            intensity {float} -- Noise intensity (default: {0.2})
+        """
+        self.intensity = intensity
+
     def add(self, img):
         """Adds speckle noise
 
@@ -247,5 +255,6 @@ class SpeckleNoise(Noise):
         Returns:
             Array -- Additive speckle noise
         """
-        normal = np.random.randn(*img.shape).astype(img.dtype)
-        return cv2.add(img, cv2.multiply(img, normal))
+
+        gauss = np.random.normal(0,self.intensity ,img.size).reshape(100,100)
+        return img + img * gauss

@@ -15,9 +15,9 @@ from skimage.restoration import wiener, unsupervised_wiener
 
 
 def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_numerator=25):
-    """Wiener filter on a image
+    """Wiener filter to sharpen an image
 
-    This filter is used to estimate the desired value of a noisy signal. 
+    This filter is used to estimate the desired value of a noisy signal.
     The Wiener filter minimizes the root mean square error between the estimated random process and the desired process.
 
     Arguments:
@@ -54,10 +54,10 @@ def wiener_filter(img, unsupervised=True, wiener_balance=1100, psf_size=5, psf_n
 
 
 def laplacian_filter(img, gaussian_kernel_size=5):
-    """Use Laplacian to reduce noise on a image
+    """Use Laplacian to filter to sharpen an image
 
-    This filter calculates the Laplace transform on an image and adds it to the original image. 
-    Gaussian noise can be added to the image to improve the result. 
+    This filter calculates the Laplace transform on an image and adds it to the original image.
+    Gaussian noise can be added to the image to improve the result.
 
     Arguments:
         img {array} -- Image source array [Non-normalize (0-255)]
@@ -78,25 +78,27 @@ def laplacian_filter(img, gaussian_kernel_size=5):
     laplace_img = cv2.Laplacian(img, cv2.CV_32F)
     return img + laplace_img
 
-
 def gaussian_filter(img, gaussian_kernel_size=(3, 3), sigma_x=3):
-    """Use gaussian filter to reduce noise on an image
+    """Use gaussian blur to reduce noise on an image
+
+    The gaussian filter is used to reduce noise by convolving a gaussian kernel.
+    It is particularly good with gaussian noise.
 
     Arguments:
-        img {array} -- Image source array
+        img {array} -- Image source array [Non-normalize (0-255)]
 
     Keyword Arguments:
-        gaussian_kernel_size {tuple} -- Gaussian kernel size (default: {(3, 3)})
-        sigma_x {int} -- Sigma parameter (default: {3})
+        gaussian_kernel_size {tuple or int} -- kernel size of the gaussian kernel, if (0,0) the kernel is define with the sigma value (default: {(0,0)})
+        sigma_x {int} -- Sigma X value of the gaussian kernel (default: {3})
 
     Returns:
-        array -- Gaussian filtered image
+        array -- Filtered image [Non-normalize (0-255)]
     """
     return cv2.GaussianBlur(img, gaussian_kernel_size, sigma_x)
 
 
 def gaussian_weighted_substract_filter(img, gaussian_kernel_size=(0, 0), sigma_x=3, weighted_alpha=1.5, weighted_beta=-0.5, weighted_gamma=0):
-    """Use gaussian filter to reduce noise on an image
+    """Use gaussian filter to sharpen an image
 
     This filter calculates a Gaussian blur on the image and adds it with certain weightings configurable with the parameters of the function.
 
@@ -200,10 +202,10 @@ def conservative_filter(img, filter_size=5):
     return new_image
 
 
-def fft_filter(img):
+def low_pass_filter(img):
     """Image noise reduction with Digital Fourier Transform
 
-    This filter performs a Fourier transform on the image. 
+    This low pass filter performs a Fourier transform on the image. 
     Afterwards, a mask is applied on the image that has undergone the Fourier transform and the image is retransformed with an inverse Fourier transform.
 
     Arguments:
@@ -230,3 +232,45 @@ def fft_filter(img):
     result_img = cv2.magnitude(result_img[:, :, 0], result_img[:, :, 1])
 
     return result_img
+
+def gaussian_blur(img, kernel=(5,5)):
+    """Adds gaussian blur noise
+
+    Arguments:
+        img {Array} -- Numpy like array of image
+
+    Keyword Arguments:
+        kernel {tuple} -- kernel shape of the blur
+
+    Returns:
+        Array -- Gaussian blur noise
+    """
+    return cv2.GaussianBlur(img, kernel, 0)
+
+def averaging_blur(img, kernel=(5,5)):
+    """Adds averaging blur noise
+
+    Arguments:
+        img {Array} -- Numpy like array of image
+
+    Keyword Arguments:
+        kernel {tuple} -- kernel shape of the blur
+
+    Returns:
+        Array -- Gaussian blur noise
+    """
+    return cv2.blur(img, kernel)
+
+def median_blur(img, k_size=5):
+    """Adds median blur noise
+
+    Arguments:
+        img {Array} -- Numpy like array of image
+
+    Keyword Arguments:
+        k_size {int} -- size of the blur
+
+    Returns:
+        Array -- Gaussian blur noise
+    """
+    return cv2.medianBlur(img, k_size)
