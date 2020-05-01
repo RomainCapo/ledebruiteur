@@ -19,4 +19,5 @@ images/
 resized_images/
 noised_images/
 saved_models/
+!saved_models/gan_generator_100epochs.h5
 dataframes/
