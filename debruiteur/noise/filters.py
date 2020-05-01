@@ -201,11 +201,33 @@ def conservative_filter(img, filter_size=5):
             temp = []
     return new_image
 
+def dft(pass_filter):
+    """Digital fourier transform
 
+    Arguments:
+        pass_filter {function} -- A function returning a mask
+    """
+    def inner(img):
+        img = np.array(img, np.float32)
+        dft = cv2.dft(img, flags=cv2.DFT_COMPLEX_OUTPUT)
+
+        dft_shift = np.fft.fftshift(dft)
+
+        mask = pass_filter(img)
+
+        fshift = dft_shift * mask
+        f_ishift = np.fft.ifftshift(fshift)
+        result_img = cv2.idft(f_ishift, flags=cv2.DFT_SCALE)
+        result_img = cv2.magnitude(result_img[:, :, 0], result_img[:, :, 1])
+
+        return result_img
+    return inner
+
+@dft
 def low_pass_filter(img):
     """Image noise reduction with Digital Fourier Transform
 
-    This low pass filter performs a Fourier transform on the image. 
+    This low pass filter performs a Fourier transform on the image.
     Afterwards, a mask is applied on the image that has undergone the Fourier transform and the image is retransformed with an inverse Fourier transform.
 
     Arguments:
@@ -214,24 +236,34 @@ def low_pass_filter(img):
     Returns:
         array -- Filtered image [Non-normalize (0-255)]
     """
-
-    img = np.array(img, np.float32)
-    dft = cv2.dft(img, flags=cv2.DFT_COMPLEX_OUTPUT)
-
-    dft_shift = np.fft.fftshift(dft)
-
     rows, cols = img.shape
     crow, ccol = rows//2, cols//2
 
     mask = np.zeros((rows, cols, 2), np.uint8)
     mask[crow-30:crow+30, ccol-30:ccol+30] = 1
 
-    fshift = dft_shift*mask
-    f_ishift = np.fft.ifftshift(fshift)
-    result_img = cv2.idft(f_ishift, flags=cv2.DFT_SCALE)
-    result_img = cv2.magnitude(result_img[:, :, 0], result_img[:, :, 1])
+    return mask
 
-    return result_img
+@dft
+def high_pass_filter(img):
+    """Image noise reduction with Digital Fourier Transform
+
+    This high pass filter performs a Fourier transform on the image.
+    Afterwards, a mask is applied on the image that has undergone the Fourier transform and the image is retransformed with an inverse Fourier transform.
+
+    Arguments:
+        img {array} -- Image source array [Non-normalize (0-255)]
+
+    Returns:
+        array -- Filtered image [Non-normalize (0-255)]
+    """
+    rows, cols = img.shape
+    crow, ccol = rows//2, cols//2
+
+    mask = np.ones((rows, cols, 2), np.uint8)
+    mask[crow-1:crow+1, ccol-1:ccol+1] = 0
+
+    return mask
 
 def gaussian_blur(img, kernel=(5,5)):
     """Adds gaussian blur noise
