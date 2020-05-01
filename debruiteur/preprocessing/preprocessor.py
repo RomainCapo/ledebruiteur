@@ -20,6 +20,23 @@ from debruiteur.utils.utils import init_dir
 from debruiteur.noise.noise import Noise
 
 
+def cache_data_frame(df_name):
+    def inner_decorator(make_df):
+        def wrapper(*args, **kwargs):
+            BASE_DIR = 'dataframes'
+            DF_DIR = os.path.join(BASE_DIR, df_name)
+            if os.path.exists(DF_DIR):
+                return pd.read_csv(DF_DIR)
+            else:
+                df = make_df(*args, **kwargs)
+                init_dir(BASE_DIR, False)
+                df.to_csv(DF_DIR, index=False)
+                return df
+        return wrapper
+    return inner_decorator
+
+
+@cache_data_frame('original.csv')
 def make_original_dataframe(base_path="images", sample_folders=20):
     """Makes a dataframe from an image directory
 
@@ -33,7 +50,8 @@ def make_original_dataframe(base_path="images", sample_folders=20):
     img_dirs = os.listdir(base_path)
 
     if sample_folders > len(img_dirs):
-        raise  ValueError(f"Wrong number of samples {sample_folders} for number of folders {len(img_dirs)}")
+        raise ValueError(
+            f"Wrong number of samples {sample_folders} for number of folders {len(img_dirs)}")
 
     np.random.seed(42)
 
@@ -82,6 +100,7 @@ def crop_img(img, shape=(100, 100)):
     return img[int(sx): int(ex), int(sy): int(ey)]
 
 
+@cache_data_frame('resized.csv')
 def make_resized_dataframe(dataframe, img_shape=(100, 100), resized_path="resized_images"):
     """Preprocesses all the images contained in the dataframe
 
@@ -110,6 +129,8 @@ def make_resized_dataframe(dataframe, img_shape=(100, 100), resized_path="resize
 
     return pd.DataFrame({'path': image_names})
 
+
+@cache_data_frame('noised.csv')
 def make_noised_dataframe(dataframe, noise_list, noised_path="noised_images"):
     """Add noise to all images in the dataframes
 

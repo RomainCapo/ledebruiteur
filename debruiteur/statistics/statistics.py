@@ -10,9 +10,7 @@ Image Processing course
 import cv2
 import pandas as pd
 import statistics
-import matplotlib.pyplot as plt
 from tqdm.notebook import tqdm
-import matplotlib.pyplot as plt
 
 from debruiteur.metrics.metrics import compare_images
 
@@ -45,12 +43,8 @@ def compute_noise_reduction_method_statistics(dg_images, noise_reduction_methods
             y_pred = method(x.reshape(img_size, img_size).copy()
                             ).reshape(img_size, img_size)
 
-            y = y.reshape(img_size, img_size)*255
+            y = y.reshape(img_size, img_size) * 255
             scores = compare_images(y, y_pred)
-
-            
-            plt.imshow(y.reshape(100,100), cmap=plt.cm.gray)
-            plt.show()
 
             mse_values.append(scores['MSE'])
             nrmse_values.append(scores['NRMSE'])
