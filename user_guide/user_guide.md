@@ -119,3 +119,11 @@ Pour obtenir plus d'information sur les différentes options :
 ```py
 python denoise.py -h
 ```
+
+## Run unit test
+
+First make sure there is an image in test_image dir and then run.
+
+```
+python -m unit_test TestDenoiseMethods
+```
