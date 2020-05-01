@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  debruiteur:
+    build: .
+    ports:
+      - "8888:8888"
+    environment:
+      CHOWN_HOME: "yes"
+      GRANT_SUDO: "yes"
+      NB_UID: 1000
+      NB_GID: 100
+    user: root
