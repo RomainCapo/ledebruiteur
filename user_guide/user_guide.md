@@ -20,6 +20,20 @@ La conclusion se trouve dans le notebook 'Statistics.ipynb'.
 * Pillow
 * tqdm
 
+## Téléchargement des données
+
+### Manuellement
+
+Le téléchargement peut soit se faire manuellement à l'adresse suivante :
+
+http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz
+
+Il faut mettre le dossier téléchargé au même niveau dans l'arborescence que les notebooks et le nommer 'images'.
+
+### Via le script
+
+Ou au travers du script ``download_caltech101.sh`` avec la commande ```./download_caltech101.sh```, il se peut qu'il faille donner les droits d'exécution avec la commande chmod.
+
 ## Installation
 
 ### Via docker
