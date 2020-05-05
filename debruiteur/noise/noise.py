@@ -256,5 +256,5 @@ class SpeckleNoise(Noise):
             Array -- Additive speckle noise
         """
 
-        gauss = np.random.normal(0,self.intensity ,img.size).reshape(100,100)
+        gauss = np.random.normal(0,self.intensity ,img.size).reshape(img.shape[0],img.shape[1])
         return img + img * gauss
