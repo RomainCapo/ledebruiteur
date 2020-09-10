@@ -8,8 +8,8 @@ And compare deep learning models with more conventional filters.
 
 ## Authors :
 
-* Romain Capocasale @RomainCapo
-* Jonas Freiburghaus @JonasFreibs23
+* Jonas Freiburghaus [@JonasFreibur](https://github.com/JonasFreibur)
+* Romain Capocasale [@RomainCapo](https://github.com/RomainCapo)
 
 ## Filters
 
